@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Regex Validation Tests - Student Finance Tracker</title>
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .test-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      .test-section {
+        margin-bottom: 3rem;
+      }
+      .test-section h2 {
+        color: var(--primary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-light);
+      }
+      .test-case {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto auto;
+        gap: 1rem;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        background: var(--surface);
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        align-items: center;
+      }
+      .test-input {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.875rem;
+      }
+      .test-expected {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
+      .test-result {
+        font-weight: 600;
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+      }
+      .test-result.pass {
+        background: #b0ce88;
+        color: #043915;
+      }
+      .test-result.fail {
+        background: #ef4444;
+        color: white;
+      }
+      .test-icon {
+        font-size: 1.25rem;
+      }
+      .summary {
+        background: var(--primary);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+      .summary h1 {
+        margin: 0 0 0.5rem 0;
+        color: white;
+      }
+      .summary-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1rem;
+      }
+      .summary-stat {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+      .pattern-display {
+        background: var(--background);
+        padding: 0.75rem;
+        border-radius: 6px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border);
+      }
+      @media (max-width: 768px) {
+        .test-case {
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-container">
+      <div class="summary">
+        <h1>Regex Validation Test Suite</h1>
+        <p>Testing all validation patterns for the Student Finance Tracker</p>
+        <div class="summary-stats">
+          <div><span class="summary-stat" id="total-tests">0</span> Total</div>
+          <div>
+            <span class="summary-stat" id="passed-tests">0</span> Passed
+          </div>
+          <div>
+            <span class="summary-stat" id="failed-tests">0</span> Failed
+          </div>
+        </div>
+      </div>
+
+      <div id="test-results"></div>
+
+      <div style="text-align: center; margin-top: 2rem">
+        <a href="index.html" class="btn btn-primary">Back to Dashboard</a>
+      </div>
+    </div>
+
+    <script type="module">
+      import { validators } from "./scripts/validators.js";
+
+      const testSuites = [
+        {
+          name: "Description Validation",
+          pattern: validators.description.pattern.toString(),
+          description:
+            "Must be 3-100 characters, letters, numbers, spaces, and basic punctuation",
+          tests: [
+            { input: "Coffee at Starbucks", expected: true },
+            { input: "Grocery shopping - Walmart", expected: true },
+            { input: "Gas", expected: true },
+            { input: "AB", expected: false },
+            { input: "", expected: false },
+            { input: "A".repeat(101), expected: false },
+            { input: "Valid description!", expected: true },
+            { input: "Test@#$%", expected: false },
+          ],
+        },
+        {
+          name: "Amount Validation",
+          pattern: validators.amount.pattern.toString(),
+          description:
+            "Must be a positive number with up to 2 decimal places (0.01 to 999999.99)",
+          tests: [
+            { input: "10.50", expected: true },
+            { input: "100", expected: true },
+            { input: "0.01", expected: true },
+            { input: "999999.99", expected: true },
+            { input: "0", expected: false },
+            { input: "0.00", expected: false },
+            { input: "-10.50", expected: false },
+            { input: "10.5", expected: true },
+            { input: "10.555", expected: false },
+            { input: "abc", expected: false },
+            { input: "1000000", expected: false },
+          ],
+        },
+        {
+          name: "Date Validation",
+          pattern: validators.date.pattern.toString(),
+          description: "Must be in YYYY-MM-DD format with valid ranges",
+          tests: [
+            { input: "2025-01-15", expected: true },
+            { input: "2024-12-31", expected: true },
+            { input: "2025-02-28", expected: true },
+            { input: "2024-02-29", expected: true },
+            { input: "2025-02-29", expected: false },
+            { input: "2025-13-01", expected: false },
+            { input: "2025-00-15", expected: false },
+            { input: "2025-01-32", expected: false },
+            { input: "2025-01-00", expected: false },
+            { input: "25-01-15", expected: false },
+            { input: "2025/01/15", expected: false },
+          ],
+        },
+        {
+          name: "Category Validation",
+          pattern: validators.category.pattern.toString(),
+          description: "Must be one of the predefined categories",
+          tests: [
+            { input: "Food", expected: true },
+            { input: "Transport", expected: true },
+            { input: "Entertainment", expected: true },
+            { input: "Shopping", expected: true },
+            { input: "Bills", expected: true },
+            { input: "Other", expected: true },
+            { input: "food", expected: false },
+            { input: "FOOD", expected: false },
+            { input: "Groceries", expected: false },
+            { input: "", expected: false },
+          ],
+        },
+        {
+          name: "Duplicate Words Detection (Advanced)",
+          pattern: validators.duplicateWords.pattern.toString(),
+          description: "Detects repeated words using back-references",
+          tests: [
+            { input: "the the", expected: true },
+            { input: "coffee coffee shop", expected: true },
+            { input: "buy buy buy", expected: true },
+            { input: "the quick brown fox", expected: false },
+            { input: "coffee shop", expected: false },
+            { input: "test test test", expected: true },
+            { input: "word word", expected: true },
+          ],
+        },
+      ];
+
+      function runTests() {
+        const resultsContainer = document.getElementById("test-results");
+        let totalTests = 0;
+        let passedTests = 0;
+        let failedTests = 0;
+
+        testSuites.forEach((suite) => {
+          const section = document.createElement("div");
+          section.className = "test-section";
+
+          const heading = document.createElement("h2");
+          heading.textContent = suite.name;
+          section.appendChild(heading);
+
+          const patternDisplay = document.createElement("div");
+          patternDisplay.className = "pattern-display";
+          patternDisplay.textContent = `Pattern: ${suite.pattern}`;
+          section.appendChild(patternDisplay);
+
+          const description = document.createElement("p");
+          description.textContent = suite.description;
+          description.style.marginBottom = "1rem";
+          description.style.color = "var(--text-secondary)";
+          section.appendChild(description);
+
+          suite.tests.forEach((test) => {
+            totalTests++;
+            const testCase = document.createElement("div");
+            testCase.className = "test-case";
+
+            const input = document.createElement("div");
+            input.className = "test-input";
+            input.textContent = `Input: "${test.input}"`;
+            testCase.appendChild(input);
+
+            const expected = document.createElement("div");
+            expected.className = "test-expected";
+            expected.textContent = `Expected: ${
+              test.expected ? "Valid" : "Invalid"
+            }`;
+            testCase.appendChild(expected);
+
+            // Run the actual validation
+            const validatorKey = suite.name
+              .toLowerCase()
+              .includes("description")
+              ? "description"
+              : suite.name.toLowerCase().includes("amount")
+              ? "amount"
+              : suite.name.toLowerCase().includes("date")
+              ? "date"
+              : suite.name.toLowerCase().includes("category")
+              ? "category"
+              : "duplicateWords";
+
+            const actual = validators[validatorKey].pattern.test(test.input);
+            const passed = actual === test.expected;
+
+            if (passed) {
+              passedTests++;
+            } else {
+              failedTests++;
+            }
+
+            const result = document.createElement("div");
+            result.className = `test-result ${passed ? "pass" : "fail"}`;
+            result.textContent = passed ? "PASS" : "FAIL";
+            testCase.appendChild(result);
+
+            const icon = document.createElement("div");
+            icon.className = "test-icon";
+            icon.textContent = passed ? "✓" : "✗";
+            icon.style.color = passed ? "#4C763B" : "#ef4444";
+            testCase.appendChild(icon);
+
+            section.appendChild(testCase);
+          });
+
+          resultsContainer.appendChild(section);
+        });
+
+        // Update summary
+        document.getElementById("total-tests").textContent = totalTests;
+        document.getElementById("passed-tests").textContent = passedTests;
+        document.getElementById("failed-tests").textContent = failedTests;
+      }
+
+      // Run tests when page loads
+      runTests();
+    </script>
+  </body>
+</html>

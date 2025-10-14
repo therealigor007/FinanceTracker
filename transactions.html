@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="View and manage all your financial transactions"
+    />
+    <title>Transactions - Student Finance Tracker</title>
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 32 32"
+              fill="none"
+              aria-hidden="true"
+            >
+              <rect width="32" height="32" rx="8" fill="#4C763B" />
+              <path d="M16 8L22 12V20L16 24L10 20V12L16 8Z" fill="#B0CE88" />
+            </svg>
+            <span class="logo-text">Finance Tracker</span>
+          </div>
+          <nav class="nav" aria-label="Main navigation">
+            <ul class="nav-list">
+              <li><a href="index.html" class="nav-link">Dashboard</a></li>
+              <li>
+                <a
+                  href="transactions.html"
+                  class="nav-link active"
+                  aria-current="page"
+                  >Transactions</a
+                >
+              </li>
+              <li><a href="add.html" class="nav-link">Add Transaction</a></li>
+              <li><a href="settings.html" class="nav-link">Settings</a></li>
+              <li><a href="about.html" class="nav-link">About</a></li>
+            </ul>
+          </nav>
+          <button
+            class="mobile-menu-toggle"
+            aria-label="Toggle mobile menu"
+            aria-expanded="false"
+          >
+            <span class="hamburger"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" class="main">
+      <div class="container">
+        <div class="page-header">
+          <h1>All Transactions</h1>
+          <p class="page-description">
+            View, search, and manage your transaction history
+          </p>
+        </div>
+
+        Search and controls
+        <div class="table-controls">
+          <div class="search-box">
+            <label for="search-input" class="sr-only"
+              >Search transactions with regex</label
+            >
+            <input
+              type="text"
+              id="search-input"
+              class="search-input"
+              placeholder="Search with regex (e.g., /coffee/i)"
+              aria-describedby="search-help search-results-count"
+            />
+            <span id="search-help" class="help-text"
+              >Use regex patterns like /pattern/flags</span
+            >
+            <div
+              id="search-error"
+              class="error-message"
+              role="alert"
+              aria-live="assertive"
+            ></div>
+            <div
+              id="search-results-count"
+              class="search-count"
+              aria-live="polite"
+              aria-atomic="true"
+            ></div>
+          </div>
+          <div class="table-actions">
+            <button id="clear-search-btn" class="btn btn-secondary">
+              Clear Search
+            </button>
+            <a href="add.html" class="btn btn-primary">Add Transaction</a>
+          </div>
+        </div>
+
+        Transactions table
+        <div class="table-wrapper">
+          <table class="transactions-table" id="transactions-table">
+            <thead>
+              <tr>
+                <th>
+                  <button
+                    class="sort-btn"
+                    data-sort="date"
+                    aria-label="Sort by date"
+                  >
+                    Date
+                    <span class="sort-icon" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th>
+                  <button
+                    class="sort-btn"
+                    data-sort="description"
+                    aria-label="Sort by description"
+                  >
+                    Description
+                    <span class="sort-icon" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th>
+                  <button
+                    class="sort-btn"
+                    data-sort="category"
+                    aria-label="Sort by category"
+                  >
+                    Category
+                    <span class="sort-icon" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th>
+                  <button
+                    class="sort-btn"
+                    data-sort="amount"
+                    aria-label="Sort by amount"
+                  >
+                    Amount
+                    <span class="sort-icon" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="transactions-tbody">
+              <tr>
+                <td colspan="5" class="empty-state">
+                  No transactions found.
+                  <a href="add.html">Add your first transaction</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    Delete confirmation modal
+    <div
+      id="delete-modal"
+      class="modal"
+      role="dialog"
+      aria-labelledby="modal-title"
+      aria-modal="true"
+      hidden
+    >
+      <div class="modal-overlay"></div>
+      <div class="modal-content">
+        <h2 id="modal-title">Confirm Delete</h2>
+        <p>
+          Are you sure you want to delete this transaction? This action cannot
+          be undone.
+        </p>
+        <div class="modal-actions">
+          <button id="cancel-delete-btn" class="btn btn-secondary">
+            Cancel
+          </button>
+          <button id="confirm-delete-btn" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          &copy; 2025 Student Finance Tracker. Built for educational purposes.
+        </p>
+      </div>
+    </footer>
+
+    <script type="module" src="scripts/storage.js"></script>
+    <script type="module" src="scripts/validators.js"></script>
+    <script type="module" src="scripts/search.js"></script>
+    <script type="module" src="scripts/state.js"></script>
+    <script type="module" src="scripts/ui.js"></script>
+    <script type="module" src="scripts/transactions.js"></script>
+  </body>
+</html>

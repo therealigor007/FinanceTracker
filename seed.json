@@ -1,0 +1,121 @@
+{
+  "transactions": [
+    {
+      "id": "1",
+      "description": "Grocery shopping at Walmart",
+      "amount": 67.45,
+      "category": "Food",
+      "date": "2025-01-10",
+      "createdAt": "2025-01-10T14:30:00Z",
+      "updatedAt": "2025-01-10T14:30:00Z"
+    },
+    {
+      "id": "2",
+      "description": "Coffee at Starbucks",
+      "amount": 5.75,
+      "category": "Food",
+      "date": "2025-01-11",
+      "createdAt": "2025-01-11T09:15:00Z",
+      "updatedAt": "2025-01-11T09:15:00Z"
+    },
+    {
+      "id": "3",
+      "description": "Bus pass monthly",
+      "amount": 85.0,
+      "category": "Transport",
+      "date": "2025-01-05",
+      "createdAt": "2025-01-05T10:00:00Z",
+      "updatedAt": "2025-01-05T10:00:00Z"
+    },
+    {
+      "id": "4",
+      "description": "Movie tickets",
+      "amount": 24.5,
+      "category": "Entertainment",
+      "date": "2025-01-12",
+      "createdAt": "2025-01-12T19:45:00Z",
+      "updatedAt": "2025-01-12T19:45:00Z"
+    },
+    {
+      "id": "5",
+      "description": "Textbooks for semester",
+      "amount": 245.0,
+      "category": "Shopping",
+      "date": "2025-01-08",
+      "createdAt": "2025-01-08T11:20:00Z",
+      "updatedAt": "2025-01-08T11:20:00Z"
+    },
+    {
+      "id": "6",
+      "description": "Internet bill",
+      "amount": 59.99,
+      "category": "Bills",
+      "date": "2025-01-01",
+      "createdAt": "2025-01-01T08:00:00Z",
+      "updatedAt": "2025-01-01T08:00:00Z"
+    },
+    {
+      "id": "7",
+      "description": "Lunch with friends",
+      "amount": 32.8,
+      "category": "Food",
+      "date": "2025-01-13",
+      "createdAt": "2025-01-13T13:30:00Z",
+      "updatedAt": "2025-01-13T13:30:00Z"
+    },
+    {
+      "id": "8",
+      "description": "Gas for car",
+      "amount": 45.0,
+      "category": "Transport",
+      "date": "2025-01-09",
+      "createdAt": "2025-01-09T16:45:00Z",
+      "updatedAt": "2025-01-09T16:45:00Z"
+    },
+    {
+      "id": "9",
+      "description": "Gym membership",
+      "amount": 39.99,
+      "category": "Other",
+      "date": "2025-01-01",
+      "createdAt": "2025-01-01T07:00:00Z",
+      "updatedAt": "2025-01-01T07:00:00Z"
+    },
+    {
+      "id": "10",
+      "description": "New headphones",
+      "amount": 89.99,
+      "category": "Shopping",
+      "date": "2025-01-14",
+      "createdAt": "2025-01-14T15:20:00Z",
+      "updatedAt": "2025-01-14T15:20:00Z"
+    },
+    {
+      "id": "11",
+      "description": "Phone bill",
+      "amount": 55.0,
+      "category": "Bills",
+      "date": "2025-01-01",
+      "createdAt": "2025-01-01T08:30:00Z",
+      "updatedAt": "2025-01-01T08:30:00Z"
+    },
+    {
+      "id": "12",
+      "description": "Concert tickets",
+      "amount": 75.0,
+      "category": "Entertainment",
+      "date": "2025-01-15",
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    }
+  ],
+  "settings": {
+    "currency": "USD",
+    "budgetCap": 1000,
+    "exchangeRates": {
+      "USD": 1,
+      "EUR": 0.92,
+      "GBP": 0.79
+    }
+  }
+}

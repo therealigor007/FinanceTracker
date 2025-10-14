@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Learn about the Student Finance Tracker application"
+    />
+    <title>About - Student Finance Tracker</title>
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 32 32"
+              fill="none"
+              aria-hidden="true"
+            >
+              <rect width="32" height="32" rx="8" fill="#4C763B" />
+              <path d="M16 8L22 12V20L16 24L10 20V12L16 8Z" fill="#B0CE88" />
+            </svg>
+            <span class="logo-text">Finance Tracker</span>
+          </div>
+          <nav class="nav" aria-label="Main navigation">
+            <ul class="nav-list">
+              <li><a href="index.html" class="nav-link">Dashboard</a></li>
+              <li>
+                <a href="transactions.html" class="nav-link">Transactions</a>
+              </li>
+              <li><a href="add.html" class="nav-link">Add Transaction</a></li>
+              <li><a href="settings.html" class="nav-link">Settings</a></li>
+              <li>
+                <a href="about.html" class="nav-link active" aria-current="page"
+                  >About</a
+                >
+              </li>
+            </ul>
+          </nav>
+          <button
+            class="mobile-menu-toggle"
+            aria-label="Toggle mobile menu"
+            aria-expanded="false"
+          >
+            <span class="hamburger"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" class="main">
+      <div class="container">
+        <div class="page-header">
+          <h1>About This Project</h1>
+          <p class="page-description">
+            Student Finance Tracker - A comprehensive expense management tool
+          </p>
+        </div>
+
+        <article class="about-content">
+          <section class="about-section">
+            <h2>Overview</h2>
+            <p>
+              The Student Finance Tracker is a web-based application designed to
+              help students manage their finances effectively. Built with
+              vanilla HTML, CSS, and JavaScript, it demonstrates modern web
+              development practices while maintaining simplicity and
+              accessibility.
+            </p>
+          </section>
+
+          <section class="about-section">
+            <h2>Key Features</h2>
+            <ul class="feature-list">
+              <li>
+                <strong>Transaction Management:</strong> Add, edit, delete, and
+                view all your financial transactions
+              </li>
+              <li>
+                <strong>Smart Search:</strong> Use regex patterns to search and
+                filter transactions
+              </li>
+              <li>
+                <strong>Budget Tracking:</strong> Set monthly budget caps and
+                monitor your spending
+              </li>
+              <li>
+                <strong>Statistics Dashboard:</strong> View spending trends and
+                category breakdowns
+              </li>
+              <li>
+                <strong>Multi-Currency Support:</strong> Work with USD, EUR, and
+                GBP with built-in converter
+              </li>
+              <li>
+                <strong>Data Portability:</strong> Import and export your data
+                as JSON
+              </li>
+              <li>
+                <strong>Offline Storage:</strong> All data stored locally in
+                your browser
+              </li>
+            </ul>
+          </section>
+
+          <section class="about-section">
+            <h2>Technical Implementation</h2>
+            <h3>Technologies Used</h3>
+            <ul class="tech-list">
+              <li>HTML5 with semantic markup</li>
+              <li>CSS3 with custom properties and responsive design</li>
+              <li>Vanilla JavaScript (ES6+ modules)</li>
+              <li>localStorage API for data persistence</li>
+              <li>Regular expressions for validation and search</li>
+            </ul>
+
+            <h3>Validation Rules</h3>
+            <p>
+              The application implements comprehensive regex-based validation:
+            </p>
+            <ul class="validation-list">
+              <li>
+                <strong>Description:</strong> 3-100 characters, alphanumeric
+                with basic punctuation
+              </li>
+              <li><strong>Amount:</strong> Decimal format (0.00 to 9999.99)</li>
+              <li><strong>Date:</strong> ISO format (YYYY-MM-DD)</li>
+              <li><strong>Category:</strong> Predefined list validation</li>
+              <li>
+                <strong>Duplicate Detection:</strong> Advanced regex with
+                back-references
+              </li>
+            </ul>
+          </section>
+
+          <section class="about-section">
+            <h2>Accessibility Features</h2>
+            <p>This application is built with accessibility as a priority:</p>
+            <ul class="accessibility-list">
+              <li>WCAG 2.1 Level AA compliant</li>
+              <li>Full keyboard navigation support</li>
+              <li>ARIA labels and live regions</li>
+              <li>Semantic HTML structure</li>
+              <li>High contrast color scheme (4.5:1 minimum)</li>
+              <li>Screen reader friendly</li>
+              <li>Skip navigation links</li>
+            </ul>
+          </section>
+
+          <section class="about-section">
+            <h2>Keyboard Shortcuts</h2>
+            <div class="keyboard-shortcuts">
+              <div class="shortcut-item">
+                <kbd>Tab</kbd>
+                <span>Navigate forward</span>
+              </div>
+              <div class="shortcut-item">
+                <kbd>Shift</kbd> + <kbd>Tab</kbd>
+                <span>Navigate backward</span>
+              </div>
+              <div class="shortcut-item">
+                <kbd>Enter</kbd>
+                <span>Activate buttons/links</span>
+              </div>
+              <div class="shortcut-item">
+                <kbd>Esc</kbd>
+                <span>Close modals</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="about-section">
+            <h2>Project Structure</h2>
+            <pre class="code-block"><code>student-finance-tracker/
+├── index.html              # Dashboard
+├── transactions.html       # Transaction list
+├── add.html               # Add/Edit form
+├── settings.html          # Settings page
+├── about.html             # This page
+├── tests.html             # Validation tests
+├── styles/
+│   └── main.css           # All styles
+└── scripts/
+    ├── storage.js         # localStorage operations
+    ├── validators.js      # Regex validation
+    ├── search.js          # Search functionality
+    ├── state.js           # State management
+    ├── ui.js              # UI rendering
+    ├── main.js            # Dashboard logic
+    ├── transactions.js    # Table logic
+    ├── form.js            # Form handling
+    └── settings.js        # Settings logic</code></pre>
+          </section>
+
+          <section class="about-section">
+            <h2>Browser Compatibility</h2>
+            <p>This application works best in modern browsers that support:</p>
+            <ul>
+              <li>ES6+ JavaScript features</li>
+              <li>CSS Custom Properties</li>
+              <li>CSS Grid and Flexbox</li>
+              <li>localStorage API</li>
+            </ul>
+            <p>
+              Recommended browsers: Chrome 90+, Firefox 88+, Safari 14+, Edge
+              90+
+            </p>
+          </section>
+
+          <section class="about-section">
+            <h2>Educational Purpose</h2>
+            <p>
+              This project was created as a summative assignment to demonstrate:
+            </p>
+            <ul>
+              <li>Semantic HTML structure</li>
+              <li>Responsive CSS design</li>
+              <li>JavaScript programming skills</li>
+              <li>Regular expression mastery</li>
+              <li>Accessibility best practices</li>
+              <li>Data persistence techniques</li>
+              <li>User experience design</li>
+            </ul>
+          </section>
+
+          <section class="about-section">
+            <h2>Contact & Resources</h2>
+            <p>For questions, feedback, or contributions:</p>
+            <ul>
+              <li>
+                Email:
+                <a href="mailto:your.email@example.com"
+                  >your.email@example.com</a
+                >
+              </li>
+              <li>
+                GitHub:
+                <a
+                  href="https://github.com/yourusername"
+                  target="_blank"
+                  rel="noopener"
+                  >@yourusername</a
+                >
+              </li>
+              <li>Documentation: See README.md in project root</li>
+            </ul>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          &copy; 2025 Student Finance Tracker. Built for educational purposes.
+        </p>
+      </div>
+    </footer>
+
+    <script type="module" src="scripts/mobile-menu.js"></script>
+  </body>
+</html>

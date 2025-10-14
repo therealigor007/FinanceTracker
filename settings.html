@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Configure your finance tracker settings"
+    />
+    <title>Settings - Student Finance Tracker</title>
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 32 32"
+              fill="none"
+              aria-hidden="true"
+            >
+              <rect width="32" height="32" rx="8" fill="#4C763B" />
+              <path d="M16 8L22 12V20L16 24L10 20V12L16 8Z" fill="#B0CE88" />
+            </svg>
+            <span class="logo-text">Finance Tracker</span>
+          </div>
+          <nav class="nav" aria-label="Main navigation">
+            <ul class="nav-list">
+              <li><a href="index.html" class="nav-link">Dashboard</a></li>
+              <li>
+                <a href="transactions.html" class="nav-link">Transactions</a>
+              </li>
+              <li><a href="add.html" class="nav-link">Add Transaction</a></li>
+              <li>
+                <a
+                  href="settings.html"
+                  class="nav-link active"
+                  aria-current="page"
+                  >Settings</a
+                >
+              </li>
+              <li><a href="about.html" class="nav-link">About</a></li>
+            </ul>
+          </nav>
+          <button
+            class="mobile-menu-toggle"
+            aria-label="Toggle mobile menu"
+            aria-expanded="false"
+          >
+            <span class="hamburger"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" class="main">
+      <div class="container">
+        <div class="page-header">
+          <h1>Settings</h1>
+          <p class="page-description">
+            Configure your budget, currency, and data management
+          </p>
+        </div>
+
+        Budget Settings
+        <section
+          class="settings-section"
+          aria-labelledby="budget-settings-heading"
+        >
+          <h2 id="budget-settings-heading" class="section-title">
+            Budget Settings
+          </h2>
+          <div class="settings-card">
+            <form id="budget-form" class="settings-form">
+              <div class="form-group">
+                <label for="budget-cap" class="form-label"
+                  >Monthly Budget Cap</label
+                >
+                <input
+                  type="text"
+                  id="budget-cap"
+                  name="budgetCap"
+                  class="form-input"
+                  placeholder="0.00"
+                  aria-describedby="budget-help budget-error"
+                />
+                <span id="budget-help" class="help-text"
+                  >Set your monthly spending limit (optional)</span
+                >
+                <span
+                  id="budget-error"
+                  class="error-message"
+                  role="alert"
+                ></span>
+              </div>
+              <button type="submit" class="btn btn-primary">Save Budget</button>
+            </form>
+          </div>
+        </section>
+
+        Currency Settings
+        <section
+          class="settings-section"
+          aria-labelledby="currency-settings-heading"
+        >
+          <h2 id="currency-settings-heading" class="section-title">
+            Currency Settings
+          </h2>
+          <div class="settings-card">
+            <form id="currency-form" class="settings-form">
+              <div class="form-group">
+                <label for="base-currency" class="form-label"
+                  >Base Currency</label
+                >
+                <select
+                  id="base-currency"
+                  name="baseCurrency"
+                  class="form-select"
+                >
+                  <option value="USD">USD - US Dollar</option>
+                  <option value="EUR">EUR - Euro</option>
+                  <option value="GBP">GBP - British Pound</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                Save Currency
+              </button>
+            </form>
+
+            Currency Converter
+            <div class="currency-converter">
+              <h3 class="converter-title">Currency Converter</h3>
+              <div class="converter-grid">
+                <div class="form-group">
+                  <label for="convert-amount" class="form-label">Amount</label>
+                  <input
+                    type="text"
+                    id="convert-amount"
+                    class="form-input"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="from-currency" class="form-label">From</label>
+                  <select id="from-currency" class="form-select">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="to-currency" class="form-label">To</label>
+                  <select id="to-currency" class="form-select">
+                    <option value="EUR">EUR</option>
+                    <option value="USD">USD</option>
+                    <option value="GBP">GBP</option>
+                  </select>
+                </div>
+              </div>
+              <div
+                class="converter-result"
+                id="conversion-result"
+                aria-live="polite"
+              ></div>
+            </div>
+          </div>
+        </section>
+
+        Data Management
+        <section
+          class="settings-section"
+          aria-labelledby="data-settings-heading"
+        >
+          <h2 id="data-settings-heading" class="section-title">
+            Data Management
+          </h2>
+          <div class="settings-card">
+            <div class="data-actions">
+              <div class="data-action-item">
+                <div>
+                  <h3 class="action-title">Export Data</h3>
+                  <p class="action-description">
+                    Download all your transactions as JSON
+                  </p>
+                </div>
+                <button id="export-btn" class="btn btn-secondary">
+                  Export JSON
+                </button>
+              </div>
+              <div class="data-action-item">
+                <div>
+                  <h3 class="action-title">Import Data</h3>
+                  <p class="action-description">
+                    Upload transactions from a JSON file
+                  </p>
+                </div>
+                <label for="import-file" class="btn btn-secondary">
+                  Choose File
+                  <input type="file" id="import-file" accept=".json" hidden />
+                </label>
+              </div>
+              <div class="data-action-item">
+                <div>
+                  <h3 class="action-title">Load Sample Data</h3>
+                  <p class="action-description">
+                    Import example transactions for testing
+                  </p>
+                </div>
+                <button id="load-sample-btn" class="btn btn-secondary">
+                  Load Sample
+                </button>
+              </div>
+              <div class="data-action-item danger">
+                <div>
+                  <h3 class="action-title">Clear All Data</h3>
+                  <p class="action-description">
+                    Delete all transactions and settings
+                  </p>
+                </div>
+                <button id="clear-data-btn" class="btn btn-danger">
+                  Clear Data
+                </button>
+              </div>
+            </div>
+            <div
+              id="data-status"
+              class="form-status"
+              role="status"
+              aria-live="polite"
+            ></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    Confirmation modal
+    <div
+      id="confirm-modal"
+      class="modal"
+      role="dialog"
+      aria-labelledby="confirm-modal-title"
+      aria-modal="true"
+      hidden
+    >
+      <div class="modal-overlay"></div>
+      <div class="modal-content">
+        <h2 id="confirm-modal-title">Confirm Action</h2>
+        <p id="confirm-modal-message"></p>
+        <div class="modal-actions">
+          <button id="cancel-confirm-btn" class="btn btn-secondary">
+            Cancel
+          </button>
+          <button id="confirm-action-btn" class="btn btn-danger">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          &copy; 2025 Student Finance Tracker. Built for educational purposes.
+        </p>
+      </div>
+    </footer>
+
+    <script type="module" src="scripts/storage.js"></script>
+    <script type="module" src="scripts/validators.js"></script>
+    <script type="module" src="scripts/state.js"></script>
+    <script type="module" src="scripts/settings.js"></script>
+  </body>
+</html>
