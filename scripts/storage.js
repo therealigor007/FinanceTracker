@@ -4,6 +4,43 @@ const STORAGE_KEYS = {
   NEXT_ID: "financeTracker_nextId",
 };
 
+// First-run seeding
+async function seedInitialData() {
+  const transactions = getTransactions();
+  if (transactions.length === 0) {
+    try {
+      const response = await fetch('./seed.json');
+      const seedData = await response.json();
+      
+      if (seedData.transactions && Array.isArray(seedData.transactions)) {
+        // Convert string IDs to numbers and ensure proper structure
+        const processedTransactions = seedData.transactions.map(t => ({
+          ...t,
+          id: Number.parseInt(t.id, 10),
+          amount: Number.parseFloat(t.amount),
+          createdAt: t.createdAt || new Date().toISOString(),
+          updatedAt: t.updatedAt || new Date().toISOString()
+        }));
+        
+        saveTransactions(processedTransactions);
+        
+        // Set NEXT_ID to max existing ID + 1
+        const maxId = Math.max(...processedTransactions.map(t => t.id));
+        localStorage.setItem(STORAGE_KEYS.NEXT_ID, (maxId + 1).toString());
+      }
+      
+      if (seedData.settings) {
+        saveSettings(seedData.settings);
+      }
+    } catch (error) {
+      console.warn('Failed to load seed data:', error);
+    }
+  }
+}
+
+// Initialize seeding on module load
+seedInitialData();
+
 export function getTransactions() {
   try {
     const data = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
@@ -89,8 +126,8 @@ export function getSettings() {
           baseCurrency: "USD",
           exchangeRates: {
             USD: 1,
-            RWF: 1250,
             EUR: 0.92,
+            RWF: 1250,
           },
         };
   } catch (error) {
@@ -98,7 +135,7 @@ export function getSettings() {
     return {
       budgetCap: null,
       baseCurrency: "USD",
-      exchangeRates: { USD: 1, RWF: 1250, EUR: 0.92 },
+      exchangeRates: { USD: 1, EUR: 0.92, RWF: 1250 },
     };
   }
 }
@@ -136,24 +173,47 @@ export function exportData() {
 
 export function importData(data) {
   try {
-    if (!data || !Array.isArray(data.transactions)) {
-      throw new Error("Invalid data format");
+    if (!data || typeof data !== 'object') {
+      throw new Error("Invalid data format - must be an object");
     }
 
-    for (const transaction of data.transactions) {
+    if (!Array.isArray(data.transactions)) {
+      throw new Error("Invalid data format - transactions must be an array");
+    }
+
+    // Validate and process transactions
+    const processedTransactions = data.transactions.map((transaction, index) => {
       if (
         !transaction.description ||
-        !transaction.amount ||
+        transaction.amount === undefined ||
+        transaction.amount === null ||
         !transaction.category ||
         !transaction.date
       ) {
-        throw new Error("Invalid transaction data");
+        throw new Error(`Invalid transaction data at index ${index}: missing required fields`);
       }
-    }
 
-    saveTransactions(data.transactions);
-    if (data.settings) {
-      saveSettings(data.settings);
+      // Coerce types and ensure proper structure
+      return {
+        ...transaction,
+        id: Number.parseInt(transaction.id, 10) || (index + 1),
+        amount: Number.parseFloat(transaction.amount),
+        createdAt: transaction.createdAt || new Date().toISOString(),
+        updatedAt: transaction.updatedAt || new Date().toISOString()
+      };
+    });
+
+    // Set NEXT_ID to max existing ID + 1
+    const maxId = Math.max(...processedTransactions.map(t => t.id));
+    localStorage.setItem(STORAGE_KEYS.NEXT_ID, (maxId + 1).toString());
+
+    saveTransactions(processedTransactions);
+    
+    // Merge settings if provided
+    if (data.settings && typeof data.settings === 'object') {
+      const currentSettings = getSettings();
+      const mergedSettings = { ...currentSettings, ...data.settings };
+      saveSettings(mergedSettings);
     }
 
     return true;

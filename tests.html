@@ -132,16 +132,17 @@
           name: "Description Validation",
           pattern: validators.description.pattern.toString(),
           description:
-            "Must be 3-100 characters, letters, numbers, spaces, and basic punctuation",
+            "No leading/trailing spaces, no consecutive spaces, no duplicate words",
           tests: [
             { input: "Coffee at Starbucks", expected: true },
             { input: "Grocery shopping - Walmart", expected: true },
             { input: "Gas", expected: true },
-            { input: "AB", expected: false },
+            { input: " Coffee", expected: false }, // leading space
+            { input: "Coffee ", expected: false }, // trailing space
+            { input: "Coffee  shop", expected: false }, // double space
+            { input: "coffee coffee", expected: false }, // duplicate words
             { input: "", expected: false },
-            { input: "A".repeat(101), expected: false },
             { input: "Valid description!", expected: true },
-            { input: "Test@#$%", expected: false },
           ],
         },
         {
@@ -166,31 +167,36 @@
         {
           name: "Date Validation",
           pattern: validators.date.pattern.toString(),
-          description: "Must be in YYYY-MM-DD format with valid ranges",
+          description: "Must be in YYYY-MM-DD format with valid ranges and leap year support",
           tests: [
             { input: "2025-01-15", expected: true },
             { input: "2024-12-31", expected: true },
             { input: "2025-02-28", expected: true },
-            { input: "2024-02-29", expected: true },
-            { input: "2025-02-29", expected: false },
+            { input: "2024-02-29", expected: true }, // leap year
+            { input: "2025-02-29", expected: false }, // non-leap year
             { input: "2025-13-01", expected: false },
             { input: "2025-00-15", expected: false },
             { input: "2025-01-32", expected: false },
             { input: "2025-01-00", expected: false },
             { input: "25-01-15", expected: false },
             { input: "2025/01/15", expected: false },
+            { input: "2020-02-29", expected: true }, // leap year
+            { input: "1900-02-29", expected: false }, // century non-leap
+            { input: "2000-02-29", expected: true }, // century leap
           ],
         },
         {
           name: "Category Validation",
-          pattern: validators.category.pattern.toString(),
+          pattern: validators.predefinedCategories.pattern.toString(),
           description: "Must be one of the predefined categories",
           tests: [
             { input: "Food", expected: true },
             { input: "Transport", expected: true },
             { input: "Entertainment", expected: true },
+            { input: "Education", expected: true },
             { input: "Shopping", expected: true },
             { input: "Bills", expected: true },
+            { input: "Health", expected: true },
             { input: "Other", expected: true },
             { input: "food", expected: false },
             { input: "FOOD", expected: false },
@@ -264,7 +270,7 @@
               : suite.name.toLowerCase().includes("date")
               ? "date"
               : suite.name.toLowerCase().includes("category")
-              ? "category"
+              ? "predefinedCategories"
               : "duplicateWords";
 
             const actual = validators[validatorKey].pattern.test(test.input);

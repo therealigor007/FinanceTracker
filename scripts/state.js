@@ -106,7 +106,13 @@ export function sortTransactions(transactions, field, direction = "asc") {
   return sorted;
 }
 
-export function formatCurrency(amount, currency = "USD") {
+export function formatCurrency(amount, currency = null) {
+  // If no currency specified, get the current base currency from settings
+  if (!currency) {
+    const settings = getSettings();
+    currency = settings.baseCurrency || "USD";
+  }
+
   const symbols = {
     USD: "$",
     EUR: "€",

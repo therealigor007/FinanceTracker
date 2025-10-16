@@ -31,7 +31,7 @@ import {
   validateDescription,
   validateAmount,
   validateDate,
-  validateCategory,
+  validatePredefinedCategory,
   parseRegexPattern,
 } from "./validators.js";
 
@@ -87,6 +87,20 @@ function initDashboard() {
   renderBudgetStatus(budgetStatus);
   renderRecentTransactions(sortTransactions(transactions, "date", "desc"));
 }
+
+// Listen for currency changes and refresh dashboard
+window.addEventListener('currencyChanged', () => {
+  if (getCurrentPage() === 'index') {
+    initDashboard();
+  }
+});
+
+// Listen for data changes and refresh dashboard
+window.addEventListener('dataCleared', () => {
+  if (getCurrentPage() === 'index') {
+    initDashboard();
+  }
+});
 
 function initTransactionsList() {
   let transactions = getTransactions();
@@ -269,7 +283,7 @@ function initAddForm() {
         result = validateDate(input.value);
         break;
       case "category":
-        result = validateCategory(input.value);
+        result = validatePredefinedCategory(input.value);
         break;
     }
 

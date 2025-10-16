@@ -1,4 +1,5 @@
 import { formatCurrency, formatDate } from "./state.js";
+import { highlight } from "./search.js";
 
 export function renderBudgetStatus(budgetStatus) {
   const spentEl = document.getElementById("spent-amount");
@@ -73,9 +74,11 @@ export function renderRecentTransactions(transactions, limit = 5) {
     .join("");
 }
 
-export function renderTransactionsTable(transactions) {
+export function renderTransactionsTable(transactions, options = {}) {
   const tbody = document.getElementById("transactions-tbody");
   if (!tbody) return;
+
+  const { highlightRe } = options;
 
   if (transactions.length === 0) {
     tbody.innerHTML =
@@ -85,26 +88,33 @@ export function renderTransactionsTable(transactions) {
 
   tbody.innerHTML = transactions
     .map(
-      (t) => `
-        <tr>
-            <td>${formatDate(t.date)}</td>
-            <td>${escapeHtml(t.description)}</td>
-            <td>${t.category}</td>
-            <td>${formatCurrency(t.amount)}</td>
-            <td>
-                <button class="btn btn-secondary" onclick="window.editTransaction(${
-                  t.id
-                })" aria-label="Edit transaction: ${escapeHtml(
-        t.description
-      )}">Edit</button>
-                <button class="btn btn-danger" onclick="window.confirmDelete(${
-                  t.id
-                })" aria-label="Delete transaction: ${escapeHtml(
-        t.description
-      )}">Delete</button>
-            </td>
-        </tr>
-    `
+      (t) => {
+        const description = highlightRe ? highlight(escapeHtml(t.description), highlightRe) : escapeHtml(t.description);
+        const category = highlightRe ? highlight(escapeHtml(t.category), highlightRe) : escapeHtml(t.category);
+        const amount = highlightRe ? highlight(formatCurrency(t.amount), highlightRe) : formatCurrency(t.amount);
+        const date = highlightRe ? highlight(formatDate(t.date), highlightRe) : formatDate(t.date);
+        
+        return `
+          <tr>
+              <td>${date}</td>
+              <td>${description}</td>
+              <td>${category}</td>
+              <td>${amount}</td>
+              <td>
+                  <button class="btn btn-secondary" onclick="window.editTransaction(${
+                    t.id
+                  })" aria-label="Edit transaction: ${escapeHtml(
+          t.description
+        )}">Edit</button>
+                  <button class="btn btn-danger" onclick="window.confirmDelete(${
+                    t.id
+                  })" aria-label="Delete transaction: ${escapeHtml(
+          t.description
+        )}">Delete</button>
+              </td>
+          </tr>
+        `;
+      }
     )
     .join("");
 }
