@@ -1,8 +1,5 @@
-// UI rendering module
-
 import { formatCurrency, formatDate } from "./state.js";
 
-// Render budget status
 export function renderBudgetStatus(budgetStatus) {
   const spentEl = document.getElementById("spent-amount");
   const budgetEl = document.getElementById("budget-amount");
@@ -24,11 +21,9 @@ export function renderBudgetStatus(budgetStatus) {
   messageEl.textContent = budgetStatus.message;
   messageEl.className = `budget-message ${budgetStatus.status}`;
 
-  // Update ARIA attributes
   const progressBar = progressEl.parentElement;
   progressBar.setAttribute("aria-valuenow", budgetStatus.percentage.toFixed(0));
 
-  // Set appropriate aria-live based on status
   if (budgetStatus.status === "danger") {
     messageEl.setAttribute("aria-live", "assertive");
   } else {
@@ -36,7 +31,6 @@ export function renderBudgetStatus(budgetStatus) {
   }
 }
 
-// Render statistics
 export function renderStats(stats) {
   const totalEl = document.getElementById("total-transactions");
   const spendingEl = document.getElementById("total-spending");
@@ -49,7 +43,6 @@ export function renderStats(stats) {
   if (weekEl) weekEl.textContent = formatCurrency(stats.weekSpending);
 }
 
-// Render recent transactions
 export function renderRecentTransactions(transactions, limit = 5) {
   const container = document.getElementById("recent-transactions");
   if (!container) return;
@@ -80,7 +73,6 @@ export function renderRecentTransactions(transactions, limit = 5) {
     .join("");
 }
 
-// Render transactions table
 export function renderTransactionsTable(transactions) {
   const tbody = document.getElementById("transactions-tbody");
   if (!tbody) return;
@@ -117,24 +109,20 @@ export function renderTransactionsTable(transactions) {
     .join("");
 }
 
-// Show modal
 export function showModal(modalId) {
   const modal = document.getElementById(modalId);
   if (!modal) return;
 
   modal.removeAttribute("hidden");
 
-  // Focus first button in modal
   const firstButton = modal.querySelector("button");
   if (firstButton) {
     setTimeout(() => firstButton.focus(), 100);
   }
 
-  // Trap focus in modal
   trapFocus(modal);
 }
 
-// Hide modal
 export function hideModal(modalId) {
   const modal = document.getElementById(modalId);
   if (!modal) return;
@@ -142,7 +130,6 @@ export function hideModal(modalId) {
   modal.setAttribute("hidden", "");
 }
 
-// Trap focus within element
 function trapFocus(element) {
   const focusableElements = element.querySelectorAll(
     'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -167,7 +154,6 @@ function trapFocus(element) {
   });
 }
 
-// Show form status message
 export function showFormStatus(message, type = "success") {
   const statusEl = document.getElementById("form-status");
   if (!statusEl) return;
@@ -176,20 +162,17 @@ export function showFormStatus(message, type = "success") {
   statusEl.className = `form-status ${type}`;
   statusEl.style.display = "block";
 
-  // Auto-hide after 5 seconds
   setTimeout(() => {
     statusEl.style.display = "none";
   }, 5000);
 }
 
-// Escape HTML to prevent XSS
 function escapeHtml(text) {
   const div = document.createElement("div");
   div.textContent = text;
   return div.innerHTML;
 }
 
-// Show data status message
 export function showDataStatus(message, type = "success") {
   const statusEl = document.getElementById("data-status");
   if (!statusEl) return;

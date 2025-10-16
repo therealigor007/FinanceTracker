@@ -1,8 +1,5 @@
-// State management module
-
 import { getTransactions, getSettings } from "./storage.js";
 
-// Calculate statistics from transactions
 export function calculateStats(transactions) {
   if (!transactions || transactions.length === 0) {
     return {
@@ -19,19 +16,16 @@ export function calculateStats(transactions) {
     0
   );
 
-  // Calculate category totals
   const categoryTotals = {};
   transactions.forEach((t) => {
     categoryTotals[t.category] =
       (categoryTotals[t.category] || 0) + Number.parseFloat(t.amount);
   });
 
-  // Find top category
   const topCategory =
     Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0]?.[0] ||
     "None";
 
-  // Calculate last 7 days spending
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const weekSpending = transactions
@@ -47,7 +41,6 @@ export function calculateStats(transactions) {
   };
 }
 
-// Calculate budget status
 export function calculateBudgetStatus() {
   const transactions = getTransactions();
   const settings = getSettings();
@@ -88,7 +81,6 @@ export function calculateBudgetStatus() {
   };
 }
 
-// Sort transactions
 export function sortTransactions(transactions, field, direction = "asc") {
   const sorted = [...transactions];
 
@@ -96,13 +88,11 @@ export function sortTransactions(transactions, field, direction = "asc") {
     let aVal = a[field];
     let bVal = b[field];
 
-    // Handle amount as number
     if (field === "amount") {
       aVal = Number.parseFloat(aVal);
       bVal = Number.parseFloat(bVal);
     }
 
-    // Handle date
     if (field === "date") {
       aVal = new Date(aVal);
       bVal = new Date(bVal);
@@ -116,7 +106,6 @@ export function sortTransactions(transactions, field, direction = "asc") {
   return sorted;
 }
 
-// Format currency
 export function formatCurrency(amount, currency = "USD") {
   const symbols = {
     USD: "$",
@@ -127,7 +116,6 @@ export function formatCurrency(amount, currency = "USD") {
   return `${symbols[currency] || "$"}${Number.parseFloat(amount).toFixed(2)}`;
 }
 
-// Format date for display
 export function formatDate(dateString) {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-US", {
@@ -137,7 +125,6 @@ export function formatDate(dateString) {
   });
 }
 
-// Convert currency
 export function convertCurrency(
   amount,
   fromCurrency,

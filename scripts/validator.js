@@ -1,6 +1,3 @@
-// Validation module - regex-based input validation
-
-// Regex patterns
 export const PATTERNS = {
   // Description: 3-100 characters, letters, numbers, spaces, and basic punctuation
   description: /^[a-zA-Z0-9\s.,!?'-]{3,100}$/,
@@ -19,7 +16,6 @@ export const PATTERNS = {
   duplicateWords: /\b(\w+)\s+\1\b/gi,
 };
 
-// Validate description
 export function validateDescription(value) {
   if (!value || value.trim() === "") {
     return { valid: false, message: "Description is required" };
@@ -33,7 +29,6 @@ export function validateDescription(value) {
     };
   }
 
-  // Check for duplicate words
   const duplicates = value.match(PATTERNS.duplicateWords);
   if (duplicates) {
     return {
@@ -45,7 +40,6 @@ export function validateDescription(value) {
   return { valid: true, message: "" };
 }
 
-// Validate amount
 export function validateAmount(value) {
   if (!value || value.trim() === "") {
     return { valid: false, message: "Amount is required" };
@@ -71,7 +65,6 @@ export function validateAmount(value) {
   return { valid: true, message: "" };
 }
 
-// Validate date
 export function validateDate(value) {
   if (!value || value.trim() === "") {
     return { valid: false, message: "Date is required" };
@@ -84,13 +77,11 @@ export function validateDate(value) {
     };
   }
 
-  // Check if date is valid
   const date = new Date(value);
   if (isNaN(date.getTime())) {
     return { valid: false, message: "Invalid date" };
   }
 
-  // Check if date is not in the future
   const today = new Date();
   today.setHours(23, 59, 59, 999);
   if (date > today) {
@@ -100,7 +91,6 @@ export function validateDate(value) {
   return { valid: true, message: "" };
 }
 
-// Validate category
 export function validateCategory(value) {
   if (!value || value.trim() === "") {
     return { valid: false, message: "Category is required" };
@@ -116,7 +106,6 @@ export function validateCategory(value) {
   return { valid: true, message: "" };
 }
 
-// Validate entire transaction
 export function validateTransaction(transaction) {
   const errors = {};
 
@@ -138,15 +127,12 @@ export function validateTransaction(transaction) {
   };
 }
 
-// Parse regex pattern from string (e.g., "/pattern/flags")
 export function parseRegexPattern(input) {
   try {
-    // Check if input is in /pattern/flags format
     const match = input.match(/^\/(.+)\/([gimuy]*)$/);
     if (match) {
       return new RegExp(match[1], match[2]);
     }
-    // Otherwise treat as plain string pattern
     return new RegExp(input, "i");
   } catch (error) {
     throw new Error("Invalid regex pattern");

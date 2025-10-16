@@ -255,8 +255,6 @@
               test.expected ? "Valid" : "Invalid"
             }`;
             testCase.appendChild(expected);
-
-            // Run the actual validation
             const validatorKey = suite.name
               .toLowerCase()
               .includes("description")
@@ -294,14 +292,10 @@
 
           resultsContainer.appendChild(section);
         });
-
-        // Update summary
         document.getElementById("total-tests").textContent = totalTests;
         document.getElementById("passed-tests").textContent = passedTests;
         document.getElementById("failed-tests").textContent = failedTests;
       }
-
-      // Run tests when page loads
       runTests();
     </script>
   </body>

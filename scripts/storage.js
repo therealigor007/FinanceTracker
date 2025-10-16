@@ -1,12 +1,9 @@
-// Storage module - handles localStorage operations
-
 const STORAGE_KEYS = {
   TRANSACTIONS: "financeTracker_transactions",
   SETTINGS: "financeTracker_settings",
   NEXT_ID: "financeTracker_nextId",
 };
 
-// Get all transactions from localStorage
 export function getTransactions() {
   try {
     const data = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
@@ -17,7 +14,6 @@ export function getTransactions() {
   }
 }
 
-// Save transactions to localStorage
 export function saveTransactions(transactions) {
   try {
     localStorage.setItem(
@@ -31,13 +27,11 @@ export function saveTransactions(transactions) {
   }
 }
 
-// Get a single transaction by ID
 export function getTransactionById(id) {
   const transactions = getTransactions();
   return transactions.find((t) => t.id === id);
 }
 
-// Add a new transaction
 export function addTransaction(transaction) {
   const transactions = getTransactions();
   const newTransaction = {
@@ -51,7 +45,6 @@ export function addTransaction(transaction) {
   return newTransaction;
 }
 
-// Update an existing transaction
 export function updateTransaction(id, updates) {
   const transactions = getTransactions();
   const index = transactions.findIndex((t) => t.id === id);
@@ -60,8 +53,8 @@ export function updateTransaction(id, updates) {
   transactions[index] = {
     ...transactions[index],
     ...updates,
-    id: transactions[index].id, // Preserve ID
-    createdAt: transactions[index].createdAt, // Preserve creation date
+    id: transactions[index].id,
+    createdAt: transactions[index].createdAt,
     updatedAt: new Date().toISOString(),
   };
 
@@ -69,7 +62,6 @@ export function updateTransaction(id, updates) {
   return transactions[index];
 }
 
-// Delete a transaction
 export function deleteTransaction(id) {
   const transactions = getTransactions();
   const filtered = transactions.filter((t) => t.id !== id);
@@ -78,7 +70,6 @@ export function deleteTransaction(id) {
   return true;
 }
 
-// Get and increment the next ID
 function getNextId() {
   const nextId = Number.parseInt(
     localStorage.getItem(STORAGE_KEYS.NEXT_ID) || "1",
@@ -88,7 +79,6 @@ function getNextId() {
   return nextId;
 }
 
-// Settings management
 export function getSettings() {
   try {
     const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
@@ -99,7 +89,7 @@ export function getSettings() {
           baseCurrency: "USD",
           exchangeRates: {
             USD: 1,
-            RWF: 1250, // Rwandan Franc
+            RWF: 1250,
             EUR: 0.92,
           },
         };
@@ -113,7 +103,6 @@ export function getSettings() {
   }
 }
 
-// Save settings
 export function saveSettings(settings) {
   try {
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
@@ -124,7 +113,6 @@ export function saveSettings(settings) {
   }
 }
 
-// Clear all data
 export function clearAllData() {
   try {
     localStorage.removeItem(STORAGE_KEYS.TRANSACTIONS);
@@ -137,7 +125,6 @@ export function clearAllData() {
   }
 }
 
-// Export data as JSON
 export function exportData() {
   return {
     transactions: getTransactions(),
@@ -147,14 +134,12 @@ export function exportData() {
   };
 }
 
-// Import data from JSON
 export function importData(data) {
   try {
     if (!data || !Array.isArray(data.transactions)) {
       throw new Error("Invalid data format");
     }
 
-    // Validate each transaction
     for (const transaction of data.transactions) {
       if (
         !transaction.description ||

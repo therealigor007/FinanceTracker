@@ -35,16 +35,13 @@ import {
   parseRegexPattern,
 } from "./validators.js";
 
-// Global state
 const currentSort = { field: "date", direction: "desc" };
 let currentSearchPattern = null;
 let editingId = null;
 
-// Initialize the application
 function init() {
   const currentPage = getCurrentPage();
 
-  // Mobile menu toggle
   const mobileMenuToggle = document.querySelector(".mobile-menu-toggle");
   const nav = document.querySelector(".nav");
 
@@ -57,7 +54,6 @@ function init() {
     });
   }
 
-  // Route to appropriate page handler
   switch (currentPage) {
     case "index":
       initDashboard();
@@ -72,19 +68,16 @@ function init() {
       initSettings();
       break;
     case "about":
-      // About page is static, no JS needed
       break;
   }
 }
 
-// Get current page from URL
 function getCurrentPage() {
   const path = window.location.pathname;
   const page = path.split("/").pop().replace(".html", "") || "index";
   return page;
 }
 
-// ===== DASHBOARD PAGE =====
 function initDashboard() {
   const transactions = getTransactions();
   const stats = calculateStats(transactions);
@@ -95,15 +88,12 @@ function initDashboard() {
   renderRecentTransactions(sortTransactions(transactions, "date", "desc"));
 }
 
-// ===== TRANSACTIONS PAGE =====
 function initTransactionsList() {
   let transactions = getTransactions();
   let filteredTransactions = transactions;
 
-  // Initial render
   renderTransactions();
 
-  // Sort buttons
   document.querySelectorAll("[data-sort]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const field = btn.dataset.sort;
@@ -114,8 +104,6 @@ function initTransactionsList() {
         currentSort.field = field;
         currentSort.direction = "asc";
       }
-
-      // Update button states
       document
         .querySelectorAll("[data-sort]")
         .forEach((b) => b.classList.remove("active"));
@@ -125,8 +113,6 @@ function initTransactionsList() {
       renderTransactions();
     });
   });
-
-  // Search functionality
   const searchInput = document.getElementById("search-input");
   const searchBtn = document.getElementById("search-btn");
   const clearSearchBtn = document.getElementById("clear-search");
@@ -195,7 +181,6 @@ function initTransactionsList() {
     renderTransactionsTable(sorted);
   }
 
-  // Make edit and delete functions global
   window.editTransaction = (id) => {
     window.location.href = `add.html?id=${id}`;
   };
@@ -205,7 +190,6 @@ function initTransactionsList() {
     showModal("delete-modal");
   };
 
-  // Delete modal handlers
   const confirmDeleteBtn = document.getElementById("confirm-delete");
   const cancelDeleteBtn = document.getElementById("cancel-delete");
 
@@ -229,7 +213,6 @@ function initTransactionsList() {
     });
   }
 
-  // Close modal on Escape
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       hideModal("delete-modal");
@@ -238,7 +221,6 @@ function initTransactionsList() {
   });
 }
 
-// ===== ADD/EDIT FORM PAGE =====
 function initAddForm() {
   const form = document.getElementById("transaction-form");
   const descInput = document.getElementById("description");
@@ -248,7 +230,6 @@ function initAddForm() {
   const submitBtn = document.getElementById("submit-btn");
   const cancelBtn = document.getElementById("cancel-btn");
 
-  // Check if editing
   const urlParams = new URLSearchParams(window.location.search);
   const editId = urlParams.get("id");
 
@@ -264,11 +245,9 @@ function initAddForm() {
       editingId = Number.parseInt(editId);
     }
   } else {
-    // Set today's date as default
     dateInput.value = new Date().toISOString().split("T")[0];
   }
 
-  // Real-time validation
   descInput.addEventListener("blur", () => validateField("description"));
   amountInput.addEventListener("blur", () => validateField("amount"));
   dateInput.addEventListener("blur", () => validateField("date"));
@@ -307,7 +286,6 @@ function initAddForm() {
     return result.valid;
   }
 
-  // Form submission
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -321,7 +299,6 @@ function initAddForm() {
     const validation = validateTransaction(transaction);
 
     if (!validation.valid) {
-      // Show all errors
       Object.keys(validation.errors).forEach((field) => {
         const errorEl = document.getElementById(`${field}-error`);
         const input = document.getElementById(field);
@@ -335,7 +312,6 @@ function initAddForm() {
       return;
     }
 
-    // Save transaction
     if (editingId) {
       updateTransaction(editingId, transaction);
       showFormStatus("Transaction updated successfully!", "success");
@@ -344,25 +320,19 @@ function initAddForm() {
       showFormStatus("Transaction added successfully!", "success");
     }
 
-    // Redirect after short delay
     setTimeout(() => {
       window.location.href = "transactions.html";
     }, 1000);
   });
 
-  // Cancel button
   if (cancelBtn) {
     cancelBtn.addEventListener("click", () => {
       window.location.href = "transactions.html";
     });
   }
 }
-
-// ===== SETTINGS PAGE =====
 function initSettings() {
   const settings = getSettings();
-
-  // Budget cap
   const budgetInput = document.getElementById("budget-cap");
   const saveBudgetBtn = document.getElementById("save-budget");
 
@@ -384,8 +354,6 @@ function initSettings() {
       }
     });
   }
-
-  // Exchange rates
   const usdRate = document.getElementById("usd-rate");
   const rwfRate = document.getElementById("rwf-rate");
   const eurRate = document.getElementById("eur-rate");
@@ -407,7 +375,6 @@ function initSettings() {
     });
   }
 
-  // Currency converter
   const convertAmount = document.getElementById("convert-amount");
   const convertFrom = document.getElementById("convert-from");
   const convertTo = document.getElementById("convert-to");
@@ -435,7 +402,6 @@ function initSettings() {
     });
   }
 
-  // Import/Export
   const exportBtn = document.getElementById("export-btn");
   const importBtn = document.getElementById("import-btn");
   const importFile = document.getElementById("import-file");
@@ -485,7 +451,6 @@ function initSettings() {
   }
 }
 
-// Initialize when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", init);
 } else {
