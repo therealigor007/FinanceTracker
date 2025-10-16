@@ -137,10 +137,10 @@
             { input: "Coffee at Starbucks", expected: true },
             { input: "Grocery shopping - Walmart", expected: true },
             { input: "Gas", expected: true },
-            { input: " Coffee", expected: false }, // leading space
-            { input: "Coffee ", expected: false }, // trailing space
-            { input: "Coffee  shop", expected: false }, // double space
-            { input: "coffee coffee", expected: false }, // duplicate words
+            { input: " Coffee", expected: false },
+            { input: "Coffee ", expected: false },
+            { input: "Coffee  shop", expected: false },
+            { input: "coffee coffee", expected: false },
             { input: "", expected: false },
             { input: "Valid description!", expected: true },
           ],
@@ -167,22 +167,23 @@
         {
           name: "Date Validation",
           pattern: validators.date.pattern.toString(),
-          description: "Must be in YYYY-MM-DD format with valid ranges and leap year support",
+          description:
+            "Must be in YYYY-MM-DD format with valid ranges and leap year support",
           tests: [
             { input: "2025-01-15", expected: true },
             { input: "2024-12-31", expected: true },
             { input: "2025-02-28", expected: true },
-            { input: "2024-02-29", expected: true }, // leap year
-            { input: "2025-02-29", expected: false }, // non-leap year
+            { input: "2024-02-29", expected: true },
+            { input: "2025-02-29", expected: false },
             { input: "2025-13-01", expected: false },
             { input: "2025-00-15", expected: false },
             { input: "2025-01-32", expected: false },
             { input: "2025-01-00", expected: false },
             { input: "25-01-15", expected: false },
             { input: "2025/01/15", expected: false },
-            { input: "2020-02-29", expected: true }, // leap year
-            { input: "1900-02-29", expected: false }, // century non-leap
-            { input: "2000-02-29", expected: true }, // century leap
+            { input: "2020-02-29", expected: true },
+            { input: "1900-02-29", expected: false },
+            { input: "2000-02-29", expected: true },
           ],
         },
         {

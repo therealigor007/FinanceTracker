@@ -1,28 +1,21 @@
-// Settings page functionality for Student Finance Tracker
-
-import { 
-  getSettings, 
-  saveSettings, 
-  exportData, 
-  importData, 
-  clearAllData 
+import {
+  getSettings,
+  saveSettings,
+  exportData,
+  importData,
+  clearAllData,
 } from "./storage.js";
-import { formatCurrency, convertCurrency } from "./state.js";
 import { showDataStatus } from "./ui.js";
 
 function initSettingsPage() {
   const settings = getSettings();
 
-  // Initialize budget settings
   initBudgetSettings(settings);
 
-  // Initialize currency settings
   initCurrencySettings(settings);
 
-  // Initialize data management
   initDataManagement();
 
-  // Initialize confirmation modal
   initConfirmationModal();
 }
 
@@ -43,13 +36,12 @@ function initBudgetSettings(settings) {
       const currentSettings = getSettings();
 
       if (value === "") {
-        // Remove budget cap
         currentSettings.budgetCap = null;
         saveSettings(currentSettings);
         showDataStatus("Budget cap removed", "success");
       } else {
         const amount = Number.parseFloat(value);
-        
+
         if (isNaN(amount) || amount <= 0) {
           if (budgetError) {
             budgetError.textContent = "Please enter a valid positive number";
@@ -68,13 +60,19 @@ function initBudgetSettings(settings) {
 
         currentSettings.budgetCap = amount;
         saveSettings(currentSettings);
+        const verify = getSettings();
         showDataStatus("Budget cap saved successfully", "success");
       }
 
-      // Clear any error message
       if (budgetError) {
         budgetError.style.display = "none";
       }
+
+      window.dispatchEvent(
+        new CustomEvent("settingsUpdated", {
+          detail: { settings: getSettings() },
+        })
+      );
     });
   }
 }
@@ -82,9 +80,7 @@ function initBudgetSettings(settings) {
 function initCurrencySettings(settings) {
   const currencyForm = document.getElementById("currency-form");
   const baseCurrencySelect = document.getElementById("base-currency");
-  
 
-  // Set initial values
   if (baseCurrencySelect) {
     baseCurrencySelect.value = settings.baseCurrency || "USD";
   }
@@ -92,19 +88,24 @@ function initCurrencySettings(settings) {
   if (currencyForm) {
     currencyForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      
+
       const currentSettings = getSettings();
-      currentSettings.baseCurrency = baseCurrencySelect.value;
+      const newCurrency = baseCurrencySelect.value;
+
+      currentSettings.baseCurrency = newCurrency;
       saveSettings(currentSettings);
+
+      const verify = getSettings();
+
       showDataStatus("Base currency saved successfully!", "success");
-      
-      // Trigger a custom event to notify other parts of the app
-      window.dispatchEvent(new CustomEvent('currencyChanged', { 
-        detail: { baseCurrency: currentSettings.baseCurrency } 
-      }));
+
+      window.dispatchEvent(
+        new CustomEvent("currencyChanged", {
+          detail: { baseCurrency: currentSettings.baseCurrency },
+        })
+      );
     });
   }
-
 }
 
 function initDataManagement() {
@@ -113,7 +114,6 @@ function initDataManagement() {
   const loadSampleBtn = document.getElementById("load-sample-btn");
   const clearDataBtn = document.getElementById("clear-data-btn");
 
-  // Export data
   if (exportBtn) {
     exportBtn.addEventListener("click", () => {
       try {
@@ -121,16 +121,18 @@ function initDataManagement() {
         const blob = new Blob([JSON.stringify(data, null, 2)], {
           type: "application/json",
         });
-        
+
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `finance-tracker-${new Date().toISOString().split("T")[0]}.json`;
+        a.download = `finance-tracker-${
+          new Date().toISOString().split("T")[0]
+        }.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        
+
         showDataStatus("Data exported successfully", "success");
       } catch (error) {
         console.error("Export error:", error);
@@ -139,7 +141,6 @@ function initDataManagement() {
     });
   }
 
-  // Import data
   if (importFile) {
     importFile.addEventListener("change", (e) => {
       const file = e.target.files[0];
@@ -160,17 +161,15 @@ function initDataManagement() {
         }
       };
       reader.readAsText(file);
-      
-      // Clear the file input
+
       e.target.value = "";
     });
   }
 
-  // Load sample data
   if (loadSampleBtn) {
     loadSampleBtn.addEventListener("click", async () => {
       try {
-        const response = await fetch('./seed.json');
+        const response = await fetch("./seed.json");
         const seedData = await response.json();
         importData(seedData);
         showDataStatus(
@@ -184,7 +183,6 @@ function initDataManagement() {
     });
   }
 
-  // Clear all data
   if (clearDataBtn) {
     clearDataBtn.addEventListener("click", () => {
       showConfirmationModal(
@@ -193,14 +191,12 @@ function initDataManagement() {
         () => {
           try {
             clearAllData();
-            showDataStatus("All data cleared successfully. Refresh the page to see changes.", "success");
-            
-            // Clear the form fields
-            if (budgetInput) budgetInput.value = "";
-            if (baseCurrencySelect) baseCurrencySelect.value = "USD";
-            
-            // Trigger a custom event to notify other parts of the app
-            window.dispatchEvent(new CustomEvent('dataCleared'));
+            showDataStatus(
+              "All data cleared successfully. Refresh the page to see changes.",
+              "success"
+            );
+
+            window.dispatchEvent(new CustomEvent("dataCleared"));
           } catch (error) {
             console.error("Clear data error:", error);
             showDataStatus("Error clearing data", "error");
@@ -222,14 +218,12 @@ function initConfirmationModal() {
 
   let confirmCallback = null;
 
-  // Store the function globally for use by other parts of the app
   window.showConfirmationModal = (modalTitle, modalMessage, callback) => {
     title.textContent = modalTitle;
     message.textContent = modalMessage;
     confirmCallback = callback;
     modal.removeAttribute("hidden");
-    
-    // Focus the confirm button
+
     setTimeout(() => confirmBtn.focus(), 100);
   };
 
@@ -247,21 +241,18 @@ function initConfirmationModal() {
 
   cancelBtn.addEventListener("click", hideModal);
 
-  // Handle escape key
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !modal.hasAttribute("hidden")) {
       hideModal();
     }
   });
 
-  // Handle modal overlay click
   const overlay = modal.querySelector(".modal-overlay");
   if (overlay) {
     overlay.addEventListener("click", hideModal);
   }
 }
 
-// Initialize when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initSettingsPage);
 } else {

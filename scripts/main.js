@@ -9,17 +9,8 @@ import {
   importData,
   getTransactionById,
 } from "./storage.js";
+import { sortTransactions, formatCurrency, formatDate } from "./state.js";
 import {
-  calculateStats,
-  calculateBudgetStatus,
-  sortTransactions,
-  formatCurrency,
-  convertCurrency,
-} from "./state.js";
-import {
-  renderBudgetStatus,
-  renderStats,
-  renderRecentTransactions,
   renderTransactionsTable,
   showModal,
   hideModal,
@@ -31,7 +22,7 @@ import {
   validateDescription,
   validateAmount,
   validateDate,
-  validatePredefinedCategory,
+  validateCategory,
   parseRegexPattern,
 } from "./validators.js";
 
@@ -55,17 +46,11 @@ function init() {
   }
 
   switch (currentPage) {
-    case "index":
-      initDashboard();
-      break;
     case "transactions":
       initTransactionsList();
       break;
     case "add":
       initAddForm();
-      break;
-    case "settings":
-      initSettings();
       break;
     case "about":
       break;
@@ -77,30 +62,6 @@ function getCurrentPage() {
   const page = path.split("/").pop().replace(".html", "") || "index";
   return page;
 }
-
-function initDashboard() {
-  const transactions = getTransactions();
-  const stats = calculateStats(transactions);
-  const budgetStatus = calculateBudgetStatus();
-
-  renderStats(stats);
-  renderBudgetStatus(budgetStatus);
-  renderRecentTransactions(sortTransactions(transactions, "date", "desc"));
-}
-
-// Listen for currency changes and refresh dashboard
-window.addEventListener('currencyChanged', () => {
-  if (getCurrentPage() === 'index') {
-    initDashboard();
-  }
-});
-
-// Listen for data changes and refresh dashboard
-window.addEventListener('dataCleared', () => {
-  if (getCurrentPage() === 'index') {
-    initDashboard();
-  }
-});
 
 function initTransactionsList() {
   let transactions = getTransactions();
@@ -127,6 +88,7 @@ function initTransactionsList() {
       renderTransactions();
     });
   });
+
   const searchInput = document.getElementById("search-input");
   const searchBtn = document.getElementById("search-btn");
   const clearSearchBtn = document.getElementById("clear-search");
@@ -241,7 +203,7 @@ function initAddForm() {
   const amountInput = document.getElementById("amount");
   const dateInput = document.getElementById("date");
   const categoryInput = document.getElementById("category");
-  const submitBtn = document.getElementById("submit-btn");
+  const submitBtn = document.querySelector('button[type="submit"]');
   const cancelBtn = document.getElementById("cancel-btn");
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -250,41 +212,50 @@ function initAddForm() {
   if (editId) {
     const transaction = getTransactionById(Number.parseInt(editId));
     if (transaction) {
-      document.querySelector("h1").textContent = "Edit Transaction";
-      submitBtn.textContent = "Update Transaction";
-      descInput.value = transaction.description;
-      amountInput.value = transaction.amount;
-      dateInput.value = transaction.date;
-      categoryInput.value = transaction.category;
+      const pageTitle = document.querySelector("h1");
+      if (pageTitle) pageTitle.textContent = "Edit Transaction";
+      if (submitBtn) submitBtn.textContent = "Update Transaction";
+      if (descInput) descInput.value = transaction.description;
+      if (amountInput) amountInput.value = transaction.amount;
+      if (dateInput) dateInput.value = transaction.date;
+      if (categoryInput) categoryInput.value = transaction.category;
       editingId = Number.parseInt(editId);
     }
   } else {
-    dateInput.value = new Date().toISOString().split("T")[0];
+    if (dateInput) dateInput.value = new Date().toISOString().split("T")[0];
   }
 
-  descInput.addEventListener("blur", () => validateField("description"));
-  amountInput.addEventListener("blur", () => validateField("amount"));
-  dateInput.addEventListener("blur", () => validateField("date"));
-  categoryInput.addEventListener("blur", () => validateField("category"));
+  const fields = ["description", "amount", "date", "category"];
+  fields.forEach((field) => {
+    const input = document.getElementById(field);
+    if (input) {
+      input.addEventListener("blur", () => validateField(field));
+    }
+  });
 
   function validateField(field) {
     const input = document.getElementById(field);
     const errorEl = document.getElementById(`${field}-error`);
+    if (!input || !errorEl) return true;
+
+    const value = input.value != null ? input.value.toString().trim() : "";
     let result;
 
     switch (field) {
       case "description":
-        result = validateDescription(input.value);
+        result = validateDescription(value);
         break;
       case "amount":
-        result = validateAmount(input.value);
+        result = validateAmount(value);
         break;
       case "date":
-        result = validateDate(input.value);
+        result = validateDate(value);
         break;
       case "category":
-        result = validatePredefinedCategory(input.value);
+        result = validateCategory(value);
         break;
+      default:
+        return true;
     }
 
     if (result.valid) {
@@ -300,167 +271,55 @@ function initAddForm() {
     return result.valid;
   }
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
 
-    const transaction = {
-      description: descInput.value.trim(),
-      amount: amountInput.value.trim(),
-      date: dateInput.value,
-      category: categoryInput.value,
-    };
+      const transaction = {
+        description: descInput?.value.toString().trim() || "",
+        amount: amountInput?.value || "",
+        date: dateInput?.value || "",
+        category: categoryInput?.value || "",
+      };
 
-    const validation = validateTransaction(transaction);
+      const validation = validateTransaction(transaction);
 
-    if (!validation.valid) {
-      Object.keys(validation.errors).forEach((field) => {
-        const errorEl = document.getElementById(`${field}-error`);
-        const input = document.getElementById(field);
-        if (errorEl && input) {
-          input.classList.add("error");
-          errorEl.textContent = validation.errors[field];
-          errorEl.style.display = "block";
-        }
-      });
-      showFormStatus("Please fix the errors above", "error");
-      return;
-    }
+      if (!validation.valid) {
+        Object.keys(validation.errors).forEach((field) => {
+          const errorEl = document.getElementById(`${field}-error`);
+          const input = document.getElementById(field);
+          if (errorEl && input) {
+            input.classList.add("error");
+            errorEl.textContent = validation.errors[field];
+            errorEl.style.display = "block";
+          }
+        });
+        showFormStatus("Please fix the errors above", "error");
+        return;
+      }
 
-    if (editingId) {
-      updateTransaction(editingId, transaction);
-      showFormStatus("Transaction updated successfully!", "success");
-    } else {
-      addTransaction(transaction);
-      showFormStatus("Transaction added successfully!", "success");
-    }
+      const transactionToSave = {
+        ...transaction,
+        amount: parseFloat(transaction.amount),
+      };
 
-    setTimeout(() => {
-      window.location.href = "transactions.html";
-    }, 1000);
-  });
+      if (editingId) {
+        updateTransaction(editingId, transactionToSave);
+        showFormStatus("Transaction updated successfully!", "success");
+      } else {
+        addTransaction(transactionToSave);
+        showFormStatus("Transaction added successfully!", "success");
+      }
+
+      setTimeout(() => {
+        window.location.href = "transactions.html";
+      }, 800);
+    });
+  }
 
   if (cancelBtn) {
     cancelBtn.addEventListener("click", () => {
       window.location.href = "transactions.html";
-    });
-  }
-}
-function initSettings() {
-  const settings = getSettings();
-  const budgetInput = document.getElementById("budget-cap");
-  const saveBudgetBtn = document.getElementById("save-budget");
-
-  if (budgetInput) {
-    budgetInput.value = settings.budgetCap || "";
-  }
-
-  if (saveBudgetBtn) {
-    saveBudgetBtn.addEventListener("click", () => {
-      const value = budgetInput.value.trim();
-      if (value && Number.parseFloat(value) > 0) {
-        settings.budgetCap = Number.parseFloat(value);
-        saveSettings(settings);
-        showDataStatus("Budget cap saved successfully", "success");
-      } else {
-        settings.budgetCap = null;
-        saveSettings(settings);
-        showDataStatus("Budget cap removed", "success");
-      }
-    });
-  }
-  const usdRate = document.getElementById("usd-rate");
-  const rwfRate = document.getElementById("rwf-rate");
-  const eurRate = document.getElementById("eur-rate");
-  const saveRatesBtn = document.getElementById("save-rates");
-
-  if (usdRate) usdRate.value = settings.exchangeRates.USD;
-  if (rwfRate) rwfRate.value = settings.exchangeRates.RWF;
-  if (eurRate) eurRate.value = settings.exchangeRates.EUR;
-
-  if (saveRatesBtn) {
-    saveRatesBtn.addEventListener("click", () => {
-      settings.exchangeRates = {
-        USD: Number.parseFloat(usdRate.value),
-        RWF: Number.parseFloat(rwfRate.value),
-        EUR: Number.parseFloat(eurRate.value),
-      };
-      saveSettings(settings);
-      showDataStatus("Exchange rates saved successfully", "success");
-    });
-  }
-
-  const convertAmount = document.getElementById("convert-amount");
-  const convertFrom = document.getElementById("convert-from");
-  const convertTo = document.getElementById("convert-to");
-  const convertBtn = document.getElementById("convert-btn");
-  const convertResult = document.getElementById("convert-result");
-
-  if (convertBtn) {
-    convertBtn.addEventListener("click", () => {
-      const amount = Number.parseFloat(convertAmount.value);
-      const from = convertFrom.value;
-      const to = convertTo.value;
-
-      if (isNaN(amount) || amount <= 0) {
-        convertResult.textContent = "Please enter a valid amount";
-        convertResult.className = "convert-result error";
-        return;
-      }
-
-      const result = convertCurrency(amount, from, to, settings.exchangeRates);
-      convertResult.textContent = `${formatCurrency(
-        amount,
-        from
-      )} = ${formatCurrency(result, to)}`;
-      convertResult.className = "convert-result success";
-    });
-  }
-
-  const exportBtn = document.getElementById("export-btn");
-  const importBtn = document.getElementById("import-btn");
-  const importFile = document.getElementById("import-file");
-
-  if (exportBtn) {
-    exportBtn.addEventListener("click", () => {
-      const data = exportData();
-      const blob = new Blob([JSON.stringify(data, null, 2)], {
-        type: "application/json",
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `finance-tracker-${
-        new Date().toISOString().split("T")[0]
-      }.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      showDataStatus("Data exported successfully", "success");
-    });
-  }
-
-  if (importBtn && importFile) {
-    importBtn.addEventListener("click", () => {
-      importFile.click();
-    });
-
-    importFile.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const data = JSON.parse(event.target.result);
-          importData(data);
-          showDataStatus(
-            "Data imported successfully! Refresh the page to see changes.",
-            "success"
-          );
-        } catch (error) {
-          showDataStatus(`Import failed: ${error.message}`, "error");
-        }
-      };
-      reader.readAsText(file);
     });
   }
 }

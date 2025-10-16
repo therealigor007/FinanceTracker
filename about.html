@@ -57,9 +57,19 @@
               aria-label="Toggle dark mode"
               title="Toggle dark mode"
             >
-              <svg class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="5"/>
-                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+              <svg
+                class="theme-icon"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="5" />
+                <path
+                  d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+                />
               </svg>
             </button>
             <button
@@ -80,6 +90,7 @@
           <h1>About This Project</h1>
           <p class="page-description">
             Student Finance Tracker - A comprehensive expense management tool
+            built with vanilla web technologies
           </p>
         </div>
 
@@ -87,11 +98,12 @@
           <section class="about-section">
             <h2>Overview</h2>
             <p>
-              The Student Finance Tracker is a web-based application designed to
-              help students manage their finances effectively. Built with
-              vanilla HTML, CSS, and JavaScript, it demonstrates modern web
-              development practices while maintaining simplicity and
-              accessibility.
+              The Student Finance Tracker is a progressive web application
+              designed to help students manage their personal finances
+              effectively. Built entirely with vanilla HTML, CSS, and JavaScript
+              (ES6+ modules), it demonstrates modern web development practices
+              including client-side state management, data persistence, and
+              responsive design—all without external frameworks.
             </p>
           </section>
 
@@ -100,31 +112,40 @@
             <ul class="feature-list">
               <li>
                 <strong>Transaction Management:</strong> Add, edit, delete, and
-                view all your financial transactions
+                view all your financial transactions with full CRUD operations
               </li>
               <li>
-                <strong>Smart Search:</strong> Use regex patterns to search and
-                filter transactions
+                <strong>Advanced Search:</strong> Use regex patterns to search
+                and filter transactions by description, category, amount, or
+                date
               </li>
               <li>
-                <strong>Budget Tracking:</strong> Set monthly budget caps and
-                monitor your spending
+                <strong>Budget Tracking:</strong> Set a monthly budget cap and
+                monitor spending with real-time progress indicators and warnings
               </li>
               <li>
-                <strong>Statistics Dashboard:</strong> View spending trends and
-                category breakdowns
+                <strong>Statistics Dashboard:</strong> View spending trends,
+                category breakdowns, and last 7 days spending summary
               </li>
               <li>
                 <strong>Multi-Currency Support:</strong> Work with USD, EUR, and
-                GBP with built-in converter
+                RWF with instant currency conversion
               </li>
               <li>
                 <strong>Data Portability:</strong> Import and export your data
-                as JSON
+                as JSON for backup and migration
               </li>
               <li>
-                <strong>Offline Storage:</strong> All data stored locally in
-                your browser
+                <strong>Offline Storage:</strong> All data stored locally using
+                localStorage API—works offline
+              </li>
+              <li>
+                <strong>Service Worker Support:</strong> Progressive Web App
+                capabilities for enhanced offline functionality
+              </li>
+              <li>
+                <strong>Dark Mode:</strong> Toggle between light and dark themes
+                with theme preference persistence
               </li>
             </ul>
           </section>
@@ -133,11 +154,53 @@
             <h2>Technical Implementation</h2>
             <h3>Technologies Used</h3>
             <ul class="tech-list">
-              <li>HTML5 with semantic markup</li>
-              <li>CSS3 with custom properties and responsive design</li>
+              <li>HTML5 with semantic markup and accessibility features</li>
+              <li>CSS3 with custom properties, CSS Grid, and Flexbox</li>
               <li>Vanilla JavaScript (ES6+ modules)</li>
-              <li>localStorage API for data persistence</li>
-              <li>Regular expressions for validation and search</li>
+              <li>localStorage API for persistent client-side storage</li>
+              <li>Regular expressions for validation and advanced search</li>
+              <li>Service Workers for offline functionality</li>
+              <li>Google Fonts for typography</li>
+            </ul>
+
+            <h3>Architecture</h3>
+            <p>
+              The application follows a modular architecture with clear
+              separation of concerns:
+            </p>
+            <ul>
+              <li>
+                <strong>storage.js:</strong> Handles all localStorage operations
+                and data persistence
+              </li>
+              <li>
+                <strong>validators.js:</strong> Comprehensive regex-based
+                validation for all input fields
+              </li>
+              <li>
+                <strong>state.js:</strong> State management including sorting
+                and currency formatting
+              </li>
+              <li>
+                <strong>ui.js:</strong> UI rendering utilities and status
+                notifications
+              </li>
+              <li>
+                <strong>dashboard.js:</strong> Dashboard statistics and budget
+                tracking display
+              </li>
+              <li>
+                <strong>form.js:</strong> Transaction form handling (add/edit)
+              </li>
+              <li>
+                <strong>main.js:</strong> Transaction list and general page
+                routing
+              </li>
+              <li>
+                <strong>settings.js:</strong> Settings management including
+                budget and currency configuration
+              </li>
+              <li><strong>theme.js:</strong> Dark mode toggle functionality</li>
             </ul>
 
             <h3>Validation Rules</h3>
@@ -147,14 +210,19 @@
             <ul class="validation-list">
               <li>
                 <strong>Description:</strong> 3-100 characters, alphanumeric
-                with basic punctuation
+                with basic punctuation (no duplicate consecutive words)
               </li>
-              <li><strong>Amount:</strong> Decimal format (0.00 to 9999.99)</li>
-              <li><strong>Date:</strong> ISO format (YYYY-MM-DD)</li>
-              <li><strong>Category:</strong> Predefined list validation</li>
               <li>
-                <strong>Duplicate Detection:</strong> Advanced regex with
-                back-references
+                <strong>Amount:</strong> Decimal format, 1-4 digits with up to 2
+                decimal places (0.01 to 9999.99)
+              </li>
+              <li>
+                <strong>Date:</strong> ISO format (YYYY-MM-DD), cannot be in the
+                future
+              </li>
+              <li>
+                <strong>Category:</strong> Predefined list (Food, Transport,
+                Entertainment, Education, Shopping, Bills, Health, Other)
               </li>
             </ul>
           </section>
@@ -163,89 +231,89 @@
             <h2>Accessibility Features</h2>
             <p>This application is built with accessibility as a priority:</p>
             <ul class="accessibility-list">
-              <li>WCAG 2.1 Level AA compliant</li>
-              <li>Full keyboard navigation support</li>
-              <li>ARIA labels and live regions</li>
-              <li>Semantic HTML structure</li>
-              <li>High contrast color scheme (4.5:1 minimum)</li>
-              <li>Screen reader friendly</li>
-              <li>Skip navigation links</li>
+              <li>WCAG 2.1 Level AA compliant design and functionality</li>
+              <li>
+                Full keyboard navigation support (Tab, Shift+Tab, Enter, Escape)
+              </li>
+              <li>ARIA labels, live regions, and semantic HTML landmarks</li>
+              <li>Semantic HTML structure for screen readers</li>
+              <li>High contrast color scheme (4.5:1 minimum ratio)</li>
+              <li>Skip navigation links for keyboard users</li>
+              <li>Responsive design that works on all device sizes</li>
+              <li>Focus management and visible focus indicators</li>
             </ul>
-          </section>
-
-          <section class="about-section">
-            <h2>Keyboard Shortcuts</h2>
-            <div class="keyboard-shortcuts">
-              <div class="shortcut-item">
-                <kbd>Tab</kbd>
-                <span>Navigate forward</span>
-              </div>
-              <div class="shortcut-item">
-                <kbd>Shift</kbd> + <kbd>Tab</kbd>
-                <span>Navigate backward</span>
-              </div>
-              <div class="shortcut-item">
-                <kbd>Enter</kbd>
-                <span>Activate buttons/links</span>
-              </div>
-              <div class="shortcut-item">
-                <kbd>Esc</kbd>
-                <span>Close modals</span>
-              </div>
-            </div>
           </section>
 
           <section class="about-section">
             <h2>Project Structure</h2>
             <pre class="code-block"><code>student-finance-tracker/
 ├── index.html              # Dashboard
-├── transactions.html       # Transaction list
-├── add.html               # Add/Edit form
-├── settings.html          # Settings page
+├── transactions.html       # Transaction list & search
+├── add.html               # Add/Edit transaction form
+├── settings.html          # Budget & currency settings
 ├── about.html             # This page
-├── tests.html             # Validation tests
 ├── styles/
-│   └── main.css           # All styles
-└── scripts/
-    ├── storage.js         # localStorage operations
-    ├── validators.js      # Regex validation
-    ├── search.js          # Search functionality
-    ├── state.js           # State management
-    ├── ui.js              # UI rendering
-    ├── main.js            # Dashboard logic
-    ├── transactions.js    # Table logic
-    ├── form.js            # Form handling
-    └── settings.js        # Settings logic</code></pre>
+│   └── main.css           # All responsive styles
+├── scripts/
+│   ├── storage.js         # localStorage operations
+│   ├── validators.js      # Regex validation
+│   ├── state.js           # State management
+│   ├── ui.js              # UI rendering
+│   ├── dashboard.js       # Dashboard logic
+│   ├── form.js            # Add/Edit form
+│   ├── main.js            # Transactions & routing
+│   ├── settings.js        # Settings logic
+│   ├── theme.js           # Dark mode
+│   ├── sw.js              # Service Worker
+│   └── sw-register.js     # SW registration
+├── seed.json              # Sample data
+└── README.md              # Documentation</code></pre>
+          </section>
+
+          <section class="about-section">
+            <h2>Data Persistence</h2>
+            <p>
+              All data is stored in the browser's localStorage with JSON
+              serialization. This means:
+            </p>
+            <ul>
+              <li>Data persists across browser sessions</li>
+              <li>No server or database required</li>
+              <li>Complete user privacy—data never leaves your device</li>
+              <li>Typical storage limit of 5-10MB per domain</li>
+              <li>Users can export data as JSON backup files</li>
+            </ul>
           </section>
 
           <section class="about-section">
             <h2>Browser Compatibility</h2>
-            <p>This application works best in modern browsers that support:</p>
+            <p>This application requires a modern browser that supports:</p>
             <ul>
-              <li>ES6+ JavaScript features</li>
-              <li>CSS Custom Properties</li>
-              <li>CSS Grid and Flexbox</li>
+              <li>
+                ES6+ JavaScript (arrow functions, template literals, modules)
+              </li>
+              <li>CSS Custom Properties and CSS Grid/Flexbox</li>
               <li>localStorage API</li>
+              <li>Fetch API</li>
             </ul>
             <p>
-              Recommended browsers: Chrome 90+, Firefox 88+, Safari 14+, Edge
-              90+
+              <strong>Tested on:</strong> Chrome 90+, Firefox 88+, Safari 14+,
+              Edge 90+
             </p>
           </section>
 
           <section class="about-section">
             <h2>Educational Purpose</h2>
-            <p>
-              This project was created as a summative assignment to demonstrate:
-            </p>
+            <p>This project demonstrates proficiency in:</p>
             <ul>
-              <li>Semantic HTML structure</li>
-              <li>Responsive CSS design</li>
-              <li>JavaScript programming skills</li>
-              <li>Regular expression mastery</li>
-              <li>Accessibility best practices</li>
-              <li>Data persistence techniques</li>
-              <li>User experience design</li>
+              <li>Semantic HTML5 structure and accessibility</li>
+              <li>Responsive CSS design and modern layout techniques</li>
+              <li>JavaScript ES6+ modules and functional programming</li>
+              <li>Regular expressions for validation and pattern matching</li>
+              <li>Client-side data persistence with localStorage</li>
+              <li>Event-driven programming and DOM manipulation</li>
+              <li>User experience design and accessibility best practices</li>
+              <li>Progressive enhancement and offline-first principles</li>
             </ul>
           </section>
 
@@ -255,20 +323,19 @@
             <ul>
               <li>
                 Email:
-                <a href="mailto:your.email@example.com"
-                  >your.email@example.com</a
+                <a href="mailto:i.ntwali@alustudent.com"
+                  >i.ntwali@alustudent.com</a
                 >
               </li>
               <li>
                 GitHub:
                 <a
-                  href="https://github.com/yourusername"
+                  href="https://github.com/realigor007"
                   target="_blank"
-                  rel="noopener"
-                  >@yourusername</a
+                  rel="noopener noreferrer"
+                  >@realigor007</a
                 >
               </li>
-              <li>Documentation: See README.md in project root</li>
             </ul>
           </section>
         </article>

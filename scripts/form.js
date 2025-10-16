@@ -1,16 +1,14 @@
-// Form functionality for Add/Edit Transaction page
-
-import { 
-  getTransactionById, 
-  addTransaction, 
-  updateTransaction 
+import {
+  getTransactionById,
+  addTransaction,
+  updateTransaction,
 } from "./storage.js";
-import { 
+import {
   validateTransaction,
   validateDescription,
   validateAmount,
   validateDate,
-  validatePredefinedCategory
+  validateCategory,
 } from "./validators.js";
 import { showFormStatus } from "./ui.js";
 
@@ -25,51 +23,43 @@ function initFormPage() {
   const submitBtn = document.querySelector('button[type="submit"]');
   const cancelBtn = document.getElementById("cancel-btn");
 
-  // Check if we're editing an existing transaction
   const urlParams = new URLSearchParams(window.location.search);
   const editId = urlParams.get("id");
-
   if (editId) {
-    const transaction = getTransactionById(Number.parseInt(editId, 10));
+    const transaction = getTransactionById(Number(editId));
     if (transaction) {
-      // Update page title and button text
-      const pageTitle = document.querySelector("h1");
-      if (pageTitle) {
-        pageTitle.textContent = "Edit Transaction";
-      }
-      
-      if (submitBtn) {
-        submitBtn.textContent = "Update Transaction";
-      }
+      editingId = Number(editId);
 
-      // Prefill form fields
-      descInput.value = transaction.description;
-      amountInput.value = transaction.amount;
-      dateInput.value = transaction.date;
-      categoryInput.value = transaction.category;
-      
-      editingId = Number.parseInt(editId, 10);
+      if (descInput) descInput.value = transaction.description;
+      if (amountInput) amountInput.value = transaction.amount.toString();
+      if (dateInput) dateInput.value = transaction.date;
+      if (categoryInput) categoryInput.value = transaction.category;
+
+      const pageTitle = document.querySelector("h1");
+      if (pageTitle) pageTitle.textContent = "Edit Transaction";
+
+      if (submitBtn) submitBtn.textContent = "Update Transaction";
     }
   } else {
-    // Set default date to today for new transactions
     const today = new Date().toISOString().split("T")[0];
-    dateInput.value = today;
+    if (dateInput) dateInput.value = today;
   }
 
-  // Set up field validation on blur
-  descInput.addEventListener("blur", () => validateField("description"));
-  amountInput.addEventListener("blur", () => validateField("amount"));
-  dateInput.addEventListener("blur", () => validateField("date"));
-  categoryInput.addEventListener("blur", () => validateField("category"));
+  const fields = ["description", "amount", "date", "category"];
+  fields.forEach((field) => {
+    const input = document.getElementById(field);
+    if (input) {
+      input.addEventListener("blur", () => validateField(field));
+    }
+  });
 
   function validateField(field) {
     const input = document.getElementById(field);
     const errorEl = document.getElementById(`${field}-error`);
-    
     if (!input || !errorEl) return true;
 
+    const value = input.value != null ? input.value.toString().trim() : "";
     let result;
-    const value = input.value.trim();
 
     switch (field) {
       case "description":
@@ -82,7 +72,7 @@ function initFormPage() {
         result = validateDate(value);
         break;
       case "category":
-        result = validatePredefinedCategory(value);
+        result = validateCategory(value);
         break;
       default:
         return true;
@@ -101,45 +91,32 @@ function initFormPage() {
     return result.valid;
   }
 
-  // Set up form submission
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      // Get form values
-      const description = descInput ? descInput.value.trim() : "";
-      const amount = amountInput ? amountInput.value.trim() : "";
-      const date = dateInput ? dateInput.value : "";
-      const category = categoryInput ? categoryInput.value : "";
+      const transactionInput = {
+        description: descInput?.value.toString().trim() || "",
+        amount: amountInput?.value || "",
+        date: dateInput?.value || "",
+        category: categoryInput?.value || "",
+      };
 
-      // Validate all fields
-      const descValid = validateField("description");
-      const amountValid = validateField("amount");
-      const dateValid = validateField("date");
-      const categoryValid = validateField("category");
+      let valid = true;
+      fields.forEach((field) => {
+        if (!validateField(field)) valid = false;
+      });
 
-      if (!descValid || !amountValid || !dateValid || !categoryValid) {
+      if (!valid) {
         showFormStatus("Please fix the errors above", "error");
         return;
       }
-
-      // Create transaction object
-      const transaction = {
-        description: description,
-        amount: Number.parseFloat(amount),
-        date: date,
-        category: category,
-      };
-
-      // Validate the complete transaction
-      const validation = validateTransaction(transaction);
-      
+      const validation = validateTransaction(transactionInput);
       if (!validation.valid) {
-        // Show field-specific errors
         Object.keys(validation.errors).forEach((field) => {
-          const errorEl = document.getElementById(`${field}-error`);
           const input = document.getElementById(field);
-          if (errorEl && input) {
+          const errorEl = document.getElementById(`${field}-error`);
+          if (input && errorEl) {
             input.classList.add("error");
             errorEl.textContent = validation.errors[field];
             errorEl.style.display = "block";
@@ -148,48 +125,45 @@ function initFormPage() {
         showFormStatus("Please fix the errors above", "error");
         return;
       }
+      const transactionToSave = {
+        ...transactionInput,
+        amount: parseFloat(transactionInput.amount),
+      };
 
       try {
         if (editingId) {
-          updateTransaction(editingId, transaction);
+          updateTransaction(editingId, transactionToSave);
           showFormStatus("Transaction updated successfully!", "success");
         } else {
-          addTransaction(transaction);
+          addTransaction(transactionToSave);
           showFormStatus("Transaction added successfully!", "success");
         }
 
-        // Redirect to dashboard after a short delay to show recent transaction
         setTimeout(() => {
-          window.location.href = "index.html";
-        }, 1500);
-      } catch (error) {
-        console.error("Error saving transaction:", error);
+          window.location.href = "transactions.html";
+        }, 800);
+      } catch (err) {
+        console.error("Error saving transaction:", err);
         showFormStatus("Error saving transaction. Please try again.", "error");
       }
     });
   }
 
-  // Set up cancel button
   if (cancelBtn) {
     cancelBtn.addEventListener("click", () => {
       window.location.href = "transactions.html";
     });
   }
 
-  // Handle escape key to cancel
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       window.location.href = "transactions.html";
     }
   });
 
-  // Focus first input
-  if (descInput) {
-    descInput.focus();
-  }
+  if (descInput) descInput.focus();
 }
 
-// Initialize when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initFormPage);
 } else {

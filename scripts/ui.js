@@ -1,197 +1,155 @@
 import { formatCurrency, formatDate } from "./state.js";
-import { highlight } from "./search.js";
-
-export function renderBudgetStatus(budgetStatus) {
-  const spentEl = document.getElementById("spent-amount");
-  const budgetEl = document.getElementById("budget-amount");
-  const progressEl = document.getElementById("budget-progress");
-  const messageEl = document.getElementById("budget-status-message");
-
-  if (!spentEl || !budgetEl || !progressEl || !messageEl) return;
-
-  spentEl.textContent = formatCurrency(budgetStatus.spent);
-  budgetEl.textContent = budgetStatus.budget
-    ? formatCurrency(budgetStatus.budget)
-    : "Not set";
-
-  progressEl.style.width = `${budgetStatus.percentage}%`;
-  progressEl.className = "progress-fill";
-  if (budgetStatus.status === "warning") progressEl.classList.add("warning");
-  if (budgetStatus.status === "danger") progressEl.classList.add("danger");
-
-  messageEl.textContent = budgetStatus.message;
-  messageEl.className = `budget-message ${budgetStatus.status}`;
-
-  const progressBar = progressEl.parentElement;
-  progressBar.setAttribute("aria-valuenow", budgetStatus.percentage.toFixed(0));
-
-  if (budgetStatus.status === "danger") {
-    messageEl.setAttribute("aria-live", "assertive");
-  } else {
-    messageEl.setAttribute("aria-live", "polite");
-  }
-}
-
-export function renderStats(stats) {
-  const totalEl = document.getElementById("total-transactions");
-  const spendingEl = document.getElementById("total-spending");
-  const categoryEl = document.getElementById("top-category");
-  const weekEl = document.getElementById("week-spending");
-
-  if (totalEl) totalEl.textContent = stats.totalTransactions;
-  if (spendingEl) spendingEl.textContent = formatCurrency(stats.totalSpending);
-  if (categoryEl) categoryEl.textContent = stats.topCategory;
-  if (weekEl) weekEl.textContent = formatCurrency(stats.weekSpending);
-}
-
-export function renderRecentTransactions(transactions, limit = 5) {
-  const container = document.getElementById("recent-transactions");
-  if (!container) return;
-
-  if (transactions.length === 0) {
-    container.innerHTML =
-      '<p class="empty-state">No transactions yet. <a href="add.html">Add your first transaction</a></p>';
-    return;
-  }
-
-  const recent = transactions.slice(0, limit);
-  container.innerHTML = recent
-    .map(
-      (t) => `
-        <div class="transaction-item">
-            <div class="transaction-info">
-                <div class="transaction-description">${escapeHtml(
-                  t.description
-                )}</div>
-                <div class="transaction-meta">${t.category} • ${formatDate(
-        t.date
-      )}</div>
-            </div>
-            <div class="transaction-amount">${formatCurrency(t.amount)}</div>
-        </div>
-    `
-    )
-    .join("");
-}
 
 export function renderTransactionsTable(transactions, options = {}) {
+  const { highlightRe = null, onEdit = null, onDelete = null } = options;
+
   const tbody = document.getElementById("transactions-tbody");
   if (!tbody) return;
 
-  const { highlightRe } = options;
+  tbody.innerHTML = "";
 
-  if (transactions.length === 0) {
-    tbody.innerHTML =
-      '<tr><td colspan="5" class="empty-state">No transactions found. <a href="add.html">Add your first transaction</a></td></tr>';
+  if (!transactions || transactions.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" class="empty-state">
+          No transactions found.
+          <a href="add.html">Add your first transaction</a>
+        </td>
+      </tr>
+    `;
     return;
   }
 
-  tbody.innerHTML = transactions
-    .map(
-      (t) => {
-        const description = highlightRe ? highlight(escapeHtml(t.description), highlightRe) : escapeHtml(t.description);
-        const category = highlightRe ? highlight(escapeHtml(t.category), highlightRe) : escapeHtml(t.category);
-        const amount = highlightRe ? highlight(formatCurrency(t.amount), highlightRe) : formatCurrency(t.amount);
-        const date = highlightRe ? highlight(formatDate(t.date), highlightRe) : formatDate(t.date);
-        
-        return `
-          <tr>
-              <td>${date}</td>
-              <td>${description}</td>
-              <td>${category}</td>
-              <td>${amount}</td>
-              <td>
-                  <button class="btn btn-secondary" onclick="window.editTransaction(${
-                    t.id
-                  })" aria-label="Edit transaction: ${escapeHtml(
-          t.description
-        )}">Edit</button>
-                  <button class="btn btn-danger" onclick="window.confirmDelete(${
-                    t.id
-                  })" aria-label="Delete transaction: ${escapeHtml(
-          t.description
-        )}">Delete</button>
-              </td>
-          </tr>
-        `;
-      }
-    )
-    .join("");
-}
+  transactions.forEach((t) => {
+    const formattedAmount = formatCurrency(t.amount);
+    const formattedDate = formatDate(t.date);
 
-export function showModal(modalId) {
-  const modal = document.getElementById(modalId);
-  if (!modal) return;
-
-  modal.removeAttribute("hidden");
-
-  const firstButton = modal.querySelector("button");
-  if (firstButton) {
-    setTimeout(() => firstButton.focus(), 100);
-  }
-
-  trapFocus(modal);
-}
-
-export function hideModal(modalId) {
-  const modal = document.getElementById(modalId);
-  if (!modal) return;
-
-  modal.setAttribute("hidden", "");
-}
-
-function trapFocus(element) {
-  const focusableElements = element.querySelectorAll(
-    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-  );
-  const firstElement = focusableElements[0];
-  const lastElement = focusableElements[focusableElements.length - 1];
-
-  element.addEventListener("keydown", (e) => {
-    if (e.key !== "Tab") return;
-
-    if (e.shiftKey) {
-      if (document.activeElement === firstElement) {
-        lastElement.focus();
-        e.preventDefault();
-      }
-    } else {
-      if (document.activeElement === lastElement) {
-        firstElement.focus();
-        e.preventDefault();
+    let descriptionHTML = t.description;
+    if (highlightRe) {
+      try {
+        descriptionHTML = t.description.replace(
+          highlightRe,
+          (match) => `<mark>${match}</mark>`
+        );
+      } catch (err) {
+        descriptionHTML = t.description;
       }
     }
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${formattedDate}</td>
+      <td>${descriptionHTML}</td>
+      <td>${t.category}</td>
+      <td>${formattedAmount}</td>
+      <td class="actions">
+        <button class="btn btn-small btn-edit" data-id="${t.id}">Edit</button>
+        <button class="btn btn-small btn-danger btn-delete" data-id="${t.id}">Delete</button>
+      </td>
+    `;
+
+    const editBtn = tr.querySelector(".btn-edit");
+    if (editBtn && typeof onEdit === "function") {
+      editBtn.addEventListener("click", () => onEdit(t.id));
+    } else if (editBtn) {
+      editBtn.addEventListener("click", () => {
+        window.location.href = `add.html?id=${t.id}`;
+      });
+    }
+
+    const deleteBtn = tr.querySelector(".btn-delete");
+    if (deleteBtn && typeof onDelete === "function") {
+      deleteBtn.addEventListener("click", () => onDelete(t.id));
+    } else if (deleteBtn) {
+      deleteBtn.addEventListener("click", () => {
+        const confirmed = confirm("Delete this transaction?");
+        if (confirmed) {
+        }
+      });
+    }
+
+    tbody.appendChild(tr);
   });
 }
 
-export function showFormStatus(message, type = "success") {
-  const statusEl = document.getElementById("form-status");
-  if (!statusEl) return;
-
-  statusEl.textContent = message;
-  statusEl.className = `form-status ${type}`;
-  statusEl.style.display = "block";
-
-  setTimeout(() => {
-    statusEl.style.display = "none";
-  }, 5000);
+export function showModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.hidden = false;
 }
 
-function escapeHtml(text) {
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
+export function hideModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.hidden = true;
+}
+
+export function showFormStatus(message, type = "success") {
+  const existing = document.getElementById("form-status");
+  if (existing) {
+    existing.textContent = message;
+    existing.className = `form-status ${type}`;
+    return;
+  }
+
+  const statusEl = document.createElement("div");
+  statusEl.id = "form-status";
+  statusEl.className = `form-status ${type}`;
+  statusEl.textContent = message;
+  statusEl.style.position = "fixed";
+  statusEl.style.top = "20px";
+  statusEl.style.right = "20px";
+  statusEl.style.zIndex = "1000";
+  statusEl.style.padding = "12px 20px";
+  statusEl.style.borderRadius = "4px";
+  statusEl.style.fontWeight = "500";
+
+  if (type === "success") {
+    statusEl.style.backgroundColor = "#4CAF50";
+    statusEl.style.color = "white";
+  } else if (type === "error") {
+    statusEl.style.backgroundColor = "#f44336";
+    statusEl.style.color = "white";
+  } else {
+    statusEl.style.backgroundColor = "#2196F3";
+    statusEl.style.color = "white";
+  }
+
+  document.body.appendChild(statusEl);
+  setTimeout(() => statusEl.remove(), 3000);
 }
 
 export function showDataStatus(message, type = "success") {
-  const statusEl = document.getElementById("data-status");
-  if (!statusEl) return;
+  const existing = document.getElementById("data-status");
+  if (existing) {
+    existing.textContent = message;
+    existing.className = `data-status ${type}`;
+    existing.style.display = "block";
+    return;
+  }
 
+  const statusEl = document.createElement("div");
+  statusEl.id = "data-status";
+  statusEl.className = `data-status ${type}`;
   statusEl.textContent = message;
-  statusEl.className = `form-status ${type}`;
+  statusEl.style.position = "fixed";
+  statusEl.style.top = "20px";
+  statusEl.style.right = "20px";
+  statusEl.style.zIndex = "1000";
+  statusEl.style.padding = "12px 20px";
+  statusEl.style.borderRadius = "4px";
+  statusEl.style.fontWeight = "500";
   statusEl.style.display = "block";
 
-  setTimeout(() => {
-    statusEl.style.display = "none";
-  }, 5000);
+  if (type === "success") {
+    statusEl.style.backgroundColor = "#4CAF50";
+    statusEl.style.color = "white";
+  } else if (type === "error") {
+    statusEl.style.backgroundColor = "#f44336";
+    statusEl.style.color = "white";
+  } else {
+    statusEl.style.backgroundColor = "#2196F3";
+    statusEl.style.color = "white";
+  }
+
+  document.body.appendChild(statusEl);
+  setTimeout(() => statusEl.remove(), 3000);
 }

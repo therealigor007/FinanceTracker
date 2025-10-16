@@ -1,83 +1,28 @@
-// Validation patterns and utilities for Student Finance Tracker
-
 export const PATTERNS = {
-  // Description: forbid leading/trailing spaces and collapse doubles
-  description: /^\S(?:.*\S)?$/,
-  
-  // Amount: positive number with up to 2 decimal places
-  amount: /^(0|[1-9]\d*)(\.\d{1,2})?$/,
-  
-  // Date: strict YYYY-MM-DD format
-  date: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/,
-  
-  // Category: letters, spaces, hyphens (for free-text input)
-  category: /^[A-Za-z]+(?:[ -][A-Za-z]+)*$/,
-  
-  // Predefined categories for dropdown validation
-  predefinedCategories: /^(Food|Transport|Entertainment|Education|Shopping|Bills|Health|Other)$/,
-  
-  // Advanced: duplicate words detection using back-references
+  description: /^[a-zA-Z0-9\s.,!?'-]{3,100}$/,
+  amount: /^\d{1,4}(\.\d{1,2})?$/,
+  date: /^\d{4}-\d{2}-\d{2}$/,
+  category:
+    /^(Food|Transport|Entertainment|Education|Shopping|Bills|Health|Other)$/,
   duplicateWords: /\b(\w+)\s+\1\b/gi,
 };
 
-export const validators = {
-  description: {
-    pattern: PATTERNS.description,
-    validate: validateDescription
-  },
-  amount: {
-    pattern: PATTERNS.amount,
-    validate: validateAmount
-  },
-  date: {
-    pattern: PATTERNS.date,
-    validate: validateDate
-  },
-  category: {
-    pattern: PATTERNS.category,
-    validate: validateCategory
-  },
-  predefinedCategories: {
-    pattern: PATTERNS.predefinedCategories,
-    validate: validatePredefinedCategory
-  },
-  duplicateWords: {
-    pattern: PATTERNS.duplicateWords,
-    validate: validateDuplicateWords
-  }
-};
-
 export function validateDescription(value) {
-  if (!value || value.trim() === "") {
+  const strValue = String(value || "");
+
+  if (!strValue || strValue.trim() === "") {
     return { valid: false, message: "Description is required" };
   }
 
-  // Check for leading/trailing spaces
-  if (value !== value.trim()) {
+  if (!PATTERNS.description.test(strValue)) {
     return {
       valid: false,
-      message: "Description cannot have leading or trailing spaces"
+      message:
+        "Description must be 3-100 characters, letters, numbers, spaces, and basic punctuation only",
     };
   }
 
-  // Check for collapsed doubles (no consecutive spaces)
-  if (/\s{2,}/.test(value)) {
-    return {
-      valid: false,
-      message: "Description cannot have multiple consecutive spaces"
-    };
-  }
-
-  // Check basic pattern
-  if (!PATTERNS.description.test(value)) {
-    return {
-      valid: false,
-      message: "Description must be non-empty and not just whitespace"
-    };
-  }
-
-  // Check for duplicate words (advanced regex)
-  const duplicates = value.match(PATTERNS.duplicateWords);
+  const duplicates = strValue.match(PATTERNS.duplicateWords);
   if (duplicates) {
     return {
       valid: false,
@@ -89,52 +34,45 @@ export function validateDescription(value) {
 }
 
 export function validateAmount(value) {
-  if (!value || value.trim() === "") {
+  const strValue = String(value ?? "").trim();
+
+  if (!strValue) {
     return { valid: false, message: "Amount is required" };
   }
+  const AMOUNT_PATTERN = /^(?!0\.00$)\d{1,4}(\.\d{1,2})?$/;
 
-  if (!PATTERNS.amount.test(value)) {
+  if (!AMOUNT_PATTERN.test(strValue)) {
     return {
       valid: false,
-      message: "Amount must be a positive number with up to 2 decimal places (e.g., 12.50)"
+      message: "Enter a valid amount (max 9999.99, 2 decimals)",
     };
   }
 
-  const numValue = Number.parseFloat(value);
-  if (numValue <= 0) {
+  const numValue = parseFloat(strValue);
+  if (isNaN(numValue) || numValue <= 0) {
     return { valid: false, message: "Amount must be greater than 0" };
-  }
-
-  if (numValue > 999999.99) {
-    return { valid: false, message: "Amount cannot exceed 999,999.99" };
   }
 
   return { valid: true, message: "" };
 }
 
 export function validateDate(value) {
-  if (!value || value.trim() === "") {
+  const strValue = String(value || "");
+
+  if (!strValue || strValue.trim() === "") {
     return { valid: false, message: "Date is required" };
   }
 
-  if (!PATTERNS.date.test(value)) {
+  if (!PATTERNS.date.test(strValue)) {
     return {
       valid: false,
-      message: "Date must be in YYYY-MM-DD format"
+      message: "Date must be in YYYY-MM-DD format",
     };
   }
 
-  const date = new Date(value);
+  const date = new Date(strValue);
   if (isNaN(date.getTime())) {
     return { valid: false, message: "Invalid date" };
-  }
-
-  // Check if the parsed date matches the input (handles invalid dates like 2025-02-29)
-  const [year, month, day] = value.split('-').map(Number);
-  if (date.getFullYear() !== year || 
-      date.getMonth() !== month - 1 || 
-      date.getDate() !== day) {
-    return { valid: false, message: "Invalid date (e.g., February 29th in non-leap year)" };
   }
 
   const today = new Date();
@@ -147,43 +85,16 @@ export function validateDate(value) {
 }
 
 export function validateCategory(value) {
-  if (!value || value.trim() === "") {
+  const strValue = String(value || "");
+
+  if (!strValue || strValue.trim() === "") {
     return { valid: false, message: "Category is required" };
   }
 
-  if (!PATTERNS.category.test(value)) {
+  if (!PATTERNS.category.test(strValue)) {
     return {
       valid: false,
-      message: "Category must contain only letters, spaces, and hyphens"
-    };
-  }
-
-  return { valid: true, message: "" };
-}
-
-export function validatePredefinedCategory(value) {
-  if (!value || value.trim() === "") {
-    return { valid: false, message: "Category is required" };
-  }
-
-  if (!PATTERNS.predefinedCategories.test(value)) {
-    return {
-      valid: false,
-      message: "Please select a valid category from the dropdown"
-    };
-  }
-
-  return { valid: true, message: "" };
-}
-
-export function validateDuplicateWords(value) {
-  if (!value) return { valid: true, message: "" };
-  
-  const duplicates = value.match(PATTERNS.duplicateWords);
-  if (duplicates) {
-    return {
-      valid: false,
-      message: `Duplicate words detected: "${duplicates[0]}"`
+      message: "Please select a valid category",
     };
   }
 
@@ -202,7 +113,7 @@ export function validateTransaction(transaction) {
   const dateResult = validateDate(transaction.date);
   if (!dateResult.valid) errors.date = dateResult.message;
 
-  const categoryResult = validatePredefinedCategory(transaction.category);
+  const categoryResult = validateCategory(transaction.category);
   if (!categoryResult.valid) errors.category = categoryResult.message;
 
   return {
@@ -213,29 +124,12 @@ export function validateTransaction(transaction) {
 
 export function parseRegexPattern(input) {
   try {
-    if (!input || input.trim() === '') {
-      return null;
-    }
-
-    // Check if input is in /pattern/flags format
     const match = input.match(/^\/(.+)\/([gimuy]*)$/);
     if (match) {
-      return new RegExp(match[1], match[2] || 'i');
+      return new RegExp(match[1], match[2]);
     }
-
-    // Default to case-insensitive search
-    return new RegExp(input, 'i');
+    return new RegExp(input, "i");
   } catch (error) {
-    throw new Error(`Invalid regex pattern: ${error.message}`);
-  }
-}
-
-// Safe regex compiler with error handling
-export function compileRegex(input, flags = 'i') {
-  try {
-    if (!input) return null;
-    return new RegExp(input, flags);
-  } catch (error) {
-    return null;
+    throw new Error("Invalid regex pattern");
   }
 }
