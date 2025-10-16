@@ -1,265 +1,167 @@
 # Student Finance Tracker
 
-A comprehensive web application for students to track expenses, manage budgets, and achieve financial goals. Built with vanilla HTML, CSS, and JavaScript.
-
-## Features
-
-### Core Functionality
-
-- **Transaction Management**: Add, edit, delete, and view financial transactions
-- **Budget Tracking**: Set spending caps and monitor progress with visual indicators
-- **Statistics Dashboard**: View spending trends, top categories, and financial summaries
-- **Multi-Currency Support**: Track expenses in USD, EUR, or GBP with manual exchange rates
-- **Data Persistence**: All data stored locally using localStorage API
-- **Import/Export**: Backup and restore data using JSON format
-
-### Advanced Features
-
-- **Regex Validation**: 5 comprehensive validation patterns including advanced back-reference detection
-- **Live Search**: Real-time regex-based search with pattern highlighting
-- **Sorting**: Multi-column sorting for transactions table
-- **Responsive Design**: Mobile-first approach with breakpoints for tablet and desktop
-- **Accessibility**: WCAG 2.1 Level AA compliant with full keyboard navigation
-
-## Project Structure
-
-\`\`\`
-student-finance-tracker/
-├── index.html # Dashboard page
-├── transactions.html # All transactions view
-├── add.html # Add/Edit transaction form
-├── settings.html # Settings and preferences
-├── about.html # About page
-├── tests.html # Regex validation test suite
-├── seed.json # Sample data for import
-├── README.md # This file
-├── styles/
-│ └── main.css # All styles (mobile-first, no frameworks)
-└── scripts/
-├── storage.js # localStorage operations
-├── validators.js # Regex validation patterns
-├── state.js # State management
-├── ui.js # UI rendering functions
-└── main.js # Main application logic
-\`\`\`
-
-## Getting Started
-
-### Installation
-
-1. Download or clone this repository
-2. Open `index.html` in a modern web browser
-3. No build process or dependencies required!
-
-### Loading Sample Data
-
-1. Go to Settings page
-2. Click "Import Data"
-3. Select the `seed.json` file
-4. Sample transactions will be loaded
-
-## Regex Validation Patterns
-
-### 1. Description Validation
-
-**Pattern**: `/^[a-zA-Z0-9\s\-,.!?]{3,100}$/`
-
-- 3-100 characters
-- Letters, numbers, spaces, and basic punctuation (- , . ! ?)
-- Examples: "Coffee at Starbucks", "Grocery shopping - Walmart"
-
-### 2. Amount Validation
-
-**Pattern**: `/^(?!0+(\.0{1,2})?$)\d{1,6}(\.\d{1,2})?$/`
-
-- Positive numbers only (no zero)
-- Up to 6 digits before decimal
-- Up to 2 digits after decimal
-- Range: 0.01 to 999999.99
-- Examples: "10.50", "100", "0.01"
-
-### 3. Date Validation
-
-**Pattern**: `/^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/`
-
-- YYYY-MM-DD format
-- Years: 1900-2099
-- Months: 01-12
-- Days: 01-31
-- Examples: "2025-01-15", "2024-12-31"
-
-### 4. Category Validation
-
-**Pattern**: `/^(Food|Transport|Entertainment|Shopping|Bills|Other)$/`
-
-- Exact match of predefined categories
-- Case-sensitive
-- Examples: "Food", "Transport", "Entertainment"
-
-### 5. Duplicate Words Detection (Advanced)
-
-**Pattern**: `/\b(\w+)\s+\1\b/`
-
-- Uses back-reference `\1` to detect repeated words
-- Matches word boundaries
-- Examples: "the the", "coffee coffee shop"
-
-## Usage Guide
-
-### Adding a Transaction
-
-1. Click "Add Transaction" in navigation
-2. Fill in all required fields:
-   - Description (3-100 characters)
-   - Amount (positive number)
-   - Category (select from dropdown)
-   - Date (YYYY-MM-DD format)
-3. Click "Add Transaction"
-4. Real-time validation provides immediate feedback
-
-### Searching Transactions
-
-1. Go to Transactions page
-2. Use the search box with regex patterns:
-   - Find coffee purchases: `coffee`
-   - Find amounts over $50: `[5-9]\d\.\d{2}|[1-9]\d{2,}\.\d{2}`
-   - Find specific dates: `2025-01-1[0-5]`
-3. Results update in real-time
-4. Matching text is highlighted
-
-### Setting a Budget
-
-1. Go to Settings page
-2. Enter your monthly budget cap
-3. Dashboard shows progress bar
-4. ARIA live regions announce budget status
-
-### Currency Conversion
-
-1. Go to Settings page
-2. Select your preferred currency
-3. Update exchange rates if needed
-4. All amounts convert automatically
-5. Use the currency converter tool
-
-## Keyboard Navigation
-
-### Global
-
-- **Tab**: Move forward through interactive elements
-- **Shift + Tab**: Move backward
-- **Enter/Space**: Activate buttons and links
-- **Escape**: Close modals and cancel operations
-
-### Forms
-
-- **Tab**: Move between fields
-- **Enter**: Submit form
-- **Escape**: Cancel edit mode
-
-### Tables
-
-- **Tab**: Navigate through action buttons
-- **Enter/Space**: Activate edit or delete
-
-## Accessibility Features
-
-### WCAG 2.1 Level AA Compliance
-
-- Semantic HTML with proper landmarks
-- Logical heading hierarchy (h1 → h2 → h3)
-- All inputs have associated labels
-- ARIA attributes for dynamic content
-- Full keyboard navigation support
-- Visible focus indicators (2px outline)
-- Minimum 4.5:1 color contrast ratio
-- Screen reader support with descriptive text
-
-### Live Regions
-
-- Budget status announcements
-- Search results count
-- Form validation messages
-- Success/error notifications
-
-## Color Palette
-
-- **Primary Green**: `#4C763B`
-- **Dark Green**: `#043915`
-- **Light Green**: `#B0CE88`
-- **Background**: `#FAFAF9`
-- **Surface**: `#FFFFFF`
-- **Text**: `#1C1917`
-- **Text Secondary**: `#78716C`
-- **Border**: `#E7E5E4`
-
-## Browser Support
-
-- Chrome/Edge 90+
-- Firefox 88+
-- Safari 14+
-- Opera 76+
-
-## Technologies Used
-
-- **HTML5**: Semantic markup
-- **CSS3**: Custom properties, Flexbox, Grid, Media Queries
-- **JavaScript (ES6+)**: Modules, Classes, Arrow Functions
-- **localStorage API**: Data persistence
-- **Regular Expressions**: Validation and search
-
-### No Frameworks or Libraries
-
-This project demonstrates modern web development using only vanilla technologies.
-
-## Testing
-
-### Automated Tests
-
-Open `tests.html` to run the regex validation test suite with 35+ test cases.
-
-### Manual Testing Checklist
-
-- [ ] Add transaction with valid data
-- [ ] Try invalid data (should show errors)
-- [ ] Edit existing transaction
-- [ ] Delete transaction (confirmation modal)
-- [ ] Search with regex patterns
-- [ ] Sort transactions by different columns
-- [ ] Set budget cap and verify progress
-- [ ] Convert between currencies
-- [ ] Export data to JSON
-- [ ] Import data from JSON
-- [ ] Test keyboard navigation
-- [ ] Test with screen reader
-- [ ] Test on mobile device
-
-## Assignment Compliance
-
-This project meets all requirements for the Student Finance Tracker assignment:
-
-- ✅ Semantic HTML structure
-- ✅ Mobile-first responsive CSS
-- ✅ 5+ regex validation patterns (including advanced back-reference)
-- ✅ Form validation with real-time feedback
-- ✅ Table with sorting and regex search
-- ✅ Stats dashboard with metrics
-- ✅ Budget cap tracking with progress bar
-- ✅ Multi-currency support (3 currencies)
-- ✅ Import/Export JSON functionality
-- ✅ localStorage persistence
-- ✅ Full keyboard navigation
-- ✅ WCAG 2.1 Level AA accessibility
-- ✅ Comprehensive documentation
-
-## License
-
-MIT License - Free to use for educational purposes.
-
-## Contact
-
-Built for educational purposes as part of a web development course.
+A comprehensive web application that helps students manage personal finances, track expenses, and achieve financial goals. Built with **vanilla HTML, CSS, and JavaScript (ES6+)**, it emphasizes **responsive design, accessibility, and offline functionality**.
 
 ---
 
-**Note**: This is a client-side only application. All data is stored locally in your browser. Clearing browser data will delete all transactions.
+## 🌐 Demo & Video
+
+- **Live Demo:** [Click here to view the app](https://therealigor007.github.io/frontend-web-dev-summative-Igor-Ntwali/)  
+- **YouTube Demo Video:** [Watch here](https://youtu.be/nZulTHwQsAw)
+
+---
+
+## 🚀 Overview
+
+The **Student Finance Tracker** is a progressive web application designed for students to:
+
+- Track financial transactions (add, edit, delete)  
+- Set and monitor budgets  
+- Visualize spending trends  
+- Work offline using localStorage  
+- Use advanced regex-based search and validation  
+
+This project demonstrates modern web development techniques without external frameworks, focusing on **modular architecture, accessibility, and responsive design**.
+
+---
+
+## ✨ Key Features
+
+- **Transaction Management:** Full CRUD operations on transactions  
+- **Advanced Search:** Regex-based filtering by description, category, amount, or date  
+- **Budget Tracking:** Real-time progress indicators with warnings  
+- **Statistics Dashboard:** Spending trends, category breakdowns, last 7 days summary  
+- **Multi-Currency Support:** USD, EUR, and RWF with instant conversion  
+- **Offline Storage:** localStorage-based persistence  
+- **Service Worker Support:** Progressive Web App offline capabilities  
+- **Dark Mode:** Light/dark theme toggle with saved preference  
+
+---
+
+## 🛠 Technical Implementation
+
+### Technologies Used
+
+- HTML5 (semantic and accessible)  
+- CSS3 (Grid, Flexbox, custom properties)  
+- JavaScript (ES6+ modules, arrow functions, template literals)  
+- localStorage API for data persistence  
+- Regex for input validation and search  
+- Service Workers for offline support  
+- Google Fonts for typography  
+
+### Architecture
+
+- `storage.js` – localStorage operations  
+- `validators.js` – Regex validation for all input fields  
+- `state.js` – State management, sorting, and formatting  
+- `ui.js` – UI rendering utilities and notifications  
+- `dashboard.js` – Dashboard logic and budget tracking  
+- `form.js` – Add/Edit transaction handling  
+- `main.js` – Transaction list and routing  
+- `settings.js` – Budget & currency management  
+- `theme.js` – Dark mode toggle  
+- `sw.js` & `sw-register.js` – Service Worker setup  
+
+---
+
+## ✅ Validation Rules
+
+- **Description:** 3–100 characters, alphanumeric + basic punctuation, no duplicate consecutive words  
+- **Amount:** Decimal numbers (0.01–9999.99), up to 2 decimal places  
+- **Date:** ISO format (YYYY-MM-DD), cannot be in the future  
+- **Category:** Predefined list: Food, Transport, Entertainment, Education, Shopping, Bills, Health, Other  
+
+---
+
+## 📁 Project Structure
+
+```
+student-finance-tracker/
+├── index.html # Dashboard
+├── transactions.html # Transaction list & search
+├── add.html # Add/Edit transaction form
+├── settings.html # Budget & currency settings
+├── about.html # About page
+├── styles/
+│ └── main.css # All responsive styles
+├── scripts/
+│ ├── storage.js # localStorage operations
+│ ├── validators.js # Regex validation
+│ ├── state.js # State management
+│ ├── ui.js # UI rendering
+│ ├── dashboard.js # Dashboard logic
+│ ├── form.js # Add/Edit form
+│ ├── main.js # Transactions & routing
+│ ├── settings.js # Settings logic
+│ ├── theme.js # Dark mode
+│ ├── sw.js # Service Worker
+│ └── sw-register.js # SW registration
+├── seed.json # Sample data
+└── README.md # Documentation
+```
+
+---
+
+## 🎨 Accessibility Features
+
+- WCAG 2.1 Level AA compliant  
+- Full keyboard navigation (Tab, Shift+Tab, Enter, Escape)  
+- ARIA labels, live regions, and semantic landmarks  
+- High contrast color scheme (≥4.5:1)  
+- Skip navigation links for keyboard users  
+- Responsive design for all device sizes  
+- Focus management and visible focus indicators  
+
+---
+
+## 📊 Browser Compatibility
+
+Tested and works on modern browsers:
+
+- Chrome 90+  
+- Firefox 88+  
+- Safari 14+  
+- Edge 90+  
+
+---
+
+## 💾 Data Persistence
+
+- All data stored in **localStorage** (offline support)  
+- Export and import JSON for backups or migration  
+- Complete privacy: data never leaves your device  
+
+---
+
+## 🧪 Testing
+
+- Open `tests.html` to run **regex validation test suite**  
+- Manual testing checklist included: adding/editing/deleting transactions, search, sorting, budgets, currency conversion, keyboard navigation, mobile support  
+
+---
+
+## 🎓 Educational Purpose
+
+This project demonstrates proficiency in:
+
+- Semantic HTML5 & accessibility  
+- Responsive CSS design  
+- JavaScript ES6+ modules & functional programming  
+- Regular expressions for validation & search  
+- Client-side state management and localStorage  
+- Event-driven programming & DOM manipulation  
+- UX design and progressive enhancement  
+
+---
+
+## 📫 Contact
+
+- **Email:** [i.ntwali@alustudent.com](mailto:i.ntwali@alustudent.com)  
+- **GitHub:** [@realigor007](https://github.com/realigor007)  
+
+---
+
+## 📄 License
+
+MIT License – Free for educational purposes.
